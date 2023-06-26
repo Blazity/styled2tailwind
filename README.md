@@ -11,7 +11,7 @@ flowchart LR
 
 ## Roadmap/milestone
 
-- [ ] Setup TS + Vitest boilerplate
+- [X] Setup TS + Vitest boilerplate
 - [ ] Setup CI (Github Actions with test runner)
 - [ ] Create a styled-components code to Javascript AST via Babel
 - [ ] Transform Javascript AST into raw CSS rules
