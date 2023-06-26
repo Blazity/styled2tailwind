@@ -11,9 +11,12 @@ flowchart LR
 
 ## Roadmap/milestone
 
-- [ ] Setup boilerplate project
-- [ ] Setup Github Actions with simple test runner
-- [ ] ...
+- [ ] Setup TS + Vitest boilerplate
+- [ ] Setup CI (Github Actions with test runner)
+- [ ] Create a styled-components code to Javascript AST via Babel
+- [ ] Transform Javascript AST into raw CSS rules
+- [ ] Convert raw CSS code into Tailwind utility classes
+- [ ] Add support for components’ variants
 
 ## Supported declaration variants
 
