@@ -11,7 +11,9 @@ flowchart LR
 
 ## Roadmap/milestone
 
-- [ ] Setup project
+- [ ] Setup boilerplate project
+- [ ] Setup Github Actions with simple test runner
+- [ ] ...
 
 ## Supported declaration variants
 
