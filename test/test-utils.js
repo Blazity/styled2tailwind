@@ -1,7 +1,7 @@
 /* eslint-disable no-prototype-builtins */
 import _ from "lodash"
 
-function stripWhitespace(str) {
+export function stripWhitespace(str) {
   return str.replace(/\s+/g, "")
 }
 

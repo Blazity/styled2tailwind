@@ -1,4 +1,3 @@
-import fs from "fs"
 import { describe, it, expect } from "vitest"
 import { transformCodeToAST } from "../src/styledComponentsToAST"
 import { findPropertyByValue } from "./test-utils"
@@ -42,11 +41,9 @@ describe("#transformCodeToAST", () => {
   })
 
   it("Should throw an error if the input is empty", () => {
-    const filePath = "random-empty-file.js"
-    fs.closeSync(fs.openSync(filePath, "w"))
-    const code = fs.readFileSync(filePath, "utf8")
+    const input = ""
 
-    expect(() => transformCodeToAST(code)).toThrowError(/^Provided input is empty$/)
+    expect(() => transformCodeToAST(input)).toThrowError(/^Provided input is empty$/)
   })
 
   it("Should throw an error if the input is not valid JavaScript code", () => {
