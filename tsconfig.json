@@ -6,6 +6,6 @@
     "sourceMap": true,
     "outDir": "dist"
   },
-  "include": ["src", "dist/exampleInput.jsx"],
+  "include": ["src", "dist/exampleInput.jsx", "dist/index.js"],
   "exclude": ["dist", "node_modules"]
 }
