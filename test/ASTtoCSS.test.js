@@ -164,7 +164,7 @@ describe("#generateCSSFromAST", () => {
 
   it("Should generate valid CSS from AST input with multiple tagged template expressions", () => {
     const result = stripWhitespace(generateCSSFromAST(input))
-    console.log(result)
+
     expect(result).toEqual(expect.stringContaining("background:white;color:palevioletred;font-size:1em;"))
     expect(result).toEqual(expect.stringContaining("&:hover{background:palevioletred;color:white;}"))
   })
