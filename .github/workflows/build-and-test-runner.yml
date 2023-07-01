@@ -1,0 +1,13 @@
+name: Build & Test
+
+on: push
+
+jobs:
+  check:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: yarn
+      - run: yarn build
+      - run: yarn test
