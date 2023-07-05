@@ -1,45 +1,36 @@
-export function convertToTailwindCSS(cssCode: string): string {
-  const cssRules = cssCode.split("}").map((rule) => rule.trim())
-  let tailwindClasses = ""
+import _ from "lodash"
 
-  cssRules.forEach((rule) => {
-    if (rule.includes("{")) {
-      const [selectors, declarations] = rule.split("{").map((part) => part.trim())
-      const selectorClasses = getSelectorClasses(selectors)
-      const declarationClasses = getDeclarationClasses(declarations)
-      if (selectorClasses !== "") {
-        tailwindClasses += `${selectorClasses} { ${declarationClasses} }\n\n`
-      } else {
-        tailwindClasses += `${declarationClasses}\n\n`
-      }
-    }
+export function convertToTailwindCSS(cssCode: string): string {
+  const CSS_BLOCKS = cssCode.split("}").map((block) => block.trim())
+
+  const tailwindClasses = CSS_BLOCKS.filter((block) => block.includes("{")).map((block) => {
+    const [selectors, declarations] = block.split("{").map((part) => part.trim())
+    const selectorClasses = extractSelectorClasses(selectors)
+    const declarationClasses = extractDeclarationClasses(declarations)
+
+    return selectorClasses ? `${selectorClasses} { ${declarationClasses.join(" ")} }` : declarationClasses.join(" ")
   })
 
-  return tailwindClasses.trim()
+  return tailwindClasses.join(" ")
 }
 
-function getSelectorClasses(selectors: string): string {
+function extractSelectorClasses(selectors: string): string {
   const classes = selectors.split(",").map((item) => item.trim())
+
   return classes.join(", ")
 }
 
-function getDeclarationClasses(declarations: string): string {
+function extractDeclarationClasses(declarations: string): string[] {
   const properties = declarations.split(";").map((declaration) => declaration.trim())
-  let classes = ""
 
-  properties.forEach((property) => {
-    if (property.includes(":")) {
+  return properties
+    .filter((property) => property.includes(":"))
+    .map((property) => {
       const [propertyKey, propertyValue] = property.split(":").map((part) => part.trim())
       const tailwindClass = getTailwindClass(propertyKey, propertyValue)
-      if (tailwindClass) {
-        classes += `${tailwindClass} `
-      } else {
-        classes += `${getPropertyAlias(propertyKey)}-${wrapWithArbitraryValue(propertyValue)} `
-      }
-    }
-  })
 
-  return classes.trim()
+      return tailwindClass ? tailwindClass : `${getPropertyAlias(propertyKey)}-${wrapWithArbitraryValue(propertyValue)}`
+    })
 }
 
 function getTailwindClass(property: string, value: string): string | null {
@@ -69,12 +60,9 @@ function getTailwindClass(property: string, value: string): string | null {
     },
   }
 
-  const propertyMapping = propertyMappings[property] || propertyMappings[toCamelCase(property)]
-  if (propertyMapping && propertyMapping[value]) {
-    return propertyMapping[value]
-  }
+  const propertyMapping = propertyMappings[property] || propertyMappings[_.camelCase(property)]
 
-  return null
+  return propertyMapping && propertyMapping[value] ? propertyMapping[value] : null
 }
 
 function getPropertyAlias(property: string): string {
@@ -83,9 +71,6 @@ function getPropertyAlias(property: string): string {
     color: "text",
     fontSize: "text",
     fontWeight: "font",
-    // Add more property aliases here
-    // Example:
-    // textDecoration: "underline",
   }
 
   return propertyAliases[property] || property
@@ -93,8 +78,4 @@ function getPropertyAlias(property: string): string {
 
 function wrapWithArbitraryValue(value: string): string {
   return `[${value}]`
-}
-
-function toCamelCase(str: string): string {
-  return str.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())
 }

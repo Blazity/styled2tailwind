@@ -9,7 +9,7 @@ export function transformCodeToAST(input: string) {
     throw new Error("Provided input is empty")
   }
 
-  let ast
+  let ast: t.Node
   try {
     ast = parse(input, {
       sourceType: "module",
@@ -45,7 +45,7 @@ export function transformCodeToAST(input: string) {
       const { declarations } = path.node
 
       declarations.forEach((declaration) => {
-        const { id, init } = declaration
+        const { init } = declaration
 
         if (t.isCallExpression(init) && t.isIdentifier(init.callee, { name: styledIdentifier.name })) {
           const styledCallExpression = t.callExpression(

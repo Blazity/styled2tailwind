@@ -1,4 +1,3 @@
-/* eslint-disable no-prototype-builtins */
 import { Node } from "@babel/core"
 import * as t from "@babel/types"
 
@@ -20,15 +19,17 @@ export function generateCSSFromAST(ast: Node): string {
 
   function traverseAST(node: Node, selectorPrefix = "") {
     if (t.isTaggedTemplateExpression(node)) {
-      const { quasi } = node
-      const templateElements = quasi.quasis.map((element) => element.value.raw)
-      const cssRule = templateElements.join("").trim()
+      const cssRule = node.quasi.quasis
+        .map((element) => element.value.raw)
+        .join("")
+        .trim()
 
       if (cssRule.length > 0) {
-        let randomSelector = generateRandomSelector()
-        while (generatedSelectors.has(randomSelector)) {
+        let randomSelector
+
+        do {
           randomSelector = generateRandomSelector()
-        }
+        } while (generatedSelectors.has(randomSelector))
 
         const selector = `${selectorPrefix}.${randomSelector}`
         generatedSelectors.add(randomSelector)
@@ -36,34 +37,24 @@ export function generateCSSFromAST(ast: Node): string {
       }
     }
 
-    if (node && typeof node === "object") {
-      for (const key in node) {
-        if (node.hasOwnProperty(key)) {
-          const childNode = node[key]
-          if (Array.isArray(childNode)) {
-            childNode.forEach((child) => traverseAST(child, selectorPrefix))
-          } else if (childNode && typeof childNode === "object") {
-            if (t.isJSXElement(childNode)) {
-              const { openingElement, closingElement } = childNode
-              const { name } = openingElement
-              if (t.isJSXIdentifier(name)) {
-                const childSelector = `${selectorPrefix} ${name.name}`
-                traverseAST(childNode, childSelector)
-              }
-              if (closingElement) {
-                const { name: closingName } = closingElement
-                if (t.isJSXIdentifier(closingName)) {
-                  const childSelector = `${selectorPrefix} ${closingName.name}`
-                  traverseAST(closingElement, childSelector)
-                }
-              }
-            } else {
-              traverseAST(childNode, selectorPrefix)
-            }
-          }
-        }
+    Object.values(node).forEach((childNode) => {
+      if (!childNode || typeof childNode !== "object") return
+
+      if (Array.isArray(childNode)) {
+        childNode.forEach((child) => traverseAST(child, selectorPrefix))
+      } else if (t.isJSXElement(childNode)) {
+        const { openingElement, closingElement } = childNode
+
+        ;[openingElement, closingElement].forEach((element) => {
+          if (!element || !t.isJSXIdentifier(element.name)) return
+
+          const childSelector = `${selectorPrefix} ${element.name.name}`
+          traverseAST(element, childSelector)
+        })
+      } else {
+        traverseAST(childNode, selectorPrefix)
       }
-    }
+    })
   }
 
   traverseAST(ast)

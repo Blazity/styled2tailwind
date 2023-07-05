@@ -5,7 +5,7 @@ import { generateCSSFromAST } from "../src/ASTtoCSS"
 import { convertToTailwindCSS } from "../src/CSStoTailwind"
 
 describe("styled-components to TailwindCSS converter flow", () => {
-  it("Should correctly transform valid JS input including styled-components into TailwindCSS utility classes", () => {
+  it("should correctly transform valid JS input including styled-components into TailwindCSS utility classes", () => {
     const input = `
       import styled from 'styled-components'
       const Button = styled.button\`

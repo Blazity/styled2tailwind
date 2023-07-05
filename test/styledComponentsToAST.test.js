@@ -3,7 +3,7 @@ import { transformCodeToAST } from "../src/styledComponentsToAST"
 import { findPropertyByValue } from "./test-utils"
 
 describe("#transformCodeToAST", () => {
-  it("Should contain a valid TemplateElement type", () => {
+  it("should contain a valid TemplateElement type", () => {
     const input = `
       import styled from 'styled-components'
       const Button = styled.button\`
@@ -19,7 +19,7 @@ describe("#transformCodeToAST", () => {
     expect(findPropertyByValue(transformCodeToAST(input), "type", "TemplateElement")).toBeTruthy()
   })
 
-  it("Should contain properties that are equal to the input code", () => {
+  it("should contain properties that are equal to the input code", () => {
     const input = `
       const Button = \`
         background: white;
@@ -40,13 +40,14 @@ describe("#transformCodeToAST", () => {
     expect(result).toBeTruthy()
   })
 
-  it("Should throw an error if the input is empty", () => {
+  it("should throw an error if the input is empty", () => {
     const input = ""
 
     expect(() => transformCodeToAST(input)).toThrowError(/^Provided input is empty$/)
+    expect(() => transformCodeToAST(input)).not.toThrowError(/^Any other error/)
   })
 
-  it("Should throw an error if the input is not valid JavaScript code", () => {
+  it("should throw an error if the input is not valid JavaScript code", () => {
     const input = `
       import styled from 'styled
       
@@ -63,7 +64,7 @@ describe("#transformCodeToAST", () => {
     expect(() => transformCodeToAST(input)).toThrowError(/^Input is not valid JavaScript code/)
   })
 
-  it("Should transform styled-component CSS interpolation into AST", () => {
+  it("should transform styled-component CSS interpolation into AST", () => {
     const input = `
       const Button = styled.button\`
         background: \${props => props.primary ? 'blue' : 'white'};
