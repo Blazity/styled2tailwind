@@ -9,14 +9,21 @@ flowchart LR
   RCSS --> TW(Tailwind CSS)
 ```
 
+## Expanded flow chart
+
+![Flow chart](https://i.imgur.com/3r6uz6I.png)
+
 ## Roadmap/milestone
 
 - [X] Setup TS + Vitest boilerplate
 - [X] Setup CI (Github Actions with test runner)
-- [ ] Create a styled-components code to Javascript AST via Babel
-- [ ] Transform Javascript AST into raw CSS rules
-- [ ] Convert raw CSS code into Tailwind utility classes
-- [ ] Add support for components’ variants
+- [X] Create a styled-components code to Javascript AST via Babel
+- [X] Transform Javascript AST into raw CSS rules
+- [X] Convert raw CSS code into Tailwind utility classes
+- [ ] Add support for dynamic values
+- [ ] Add support for different components variants and declarations
+- [ ] Reorganize code to increase interface flexibility and allow creating extensions
+- [ ] Create a CLI tool prototype
 
 ## Supported declaration variants
 
