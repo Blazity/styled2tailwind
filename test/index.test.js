@@ -9,10 +9,20 @@ describe("styled-components to TailwindCSS converter flow", () => {
     const input = `
       import styled from 'styled-components'
       const Button = styled.button\`
-        backgroundColor: white;
-        color: palevioletred;
-        font-size: 1rem;
-        padding: 0.25rem;
+        background-color: white; 
+        font-size: 16px; 
+        padding: 7px 4rem 0 1px;
+        margin: auto;
+      \`
+      const Header = styled.h1\`
+        border-radius: 50%;
+        font-family: ui-sans-serif;
+        font-weight: 400;
+        line-height: 2.5rem;
+      \`
+      const Div = styled.div\`
+        max-height: 6rem;
+        min-height: 72px;
       \`
     `
     // styled-components to TailwindCSS flow showcase
@@ -31,7 +41,7 @@ describe("styled-components to TailwindCSS converter flow", () => {
     console.log(`Generated TailwindCSS:\n\n${generatedTailwindCSS}\n`)
 
     expect(stripWhitespace(generatedTailwindCSS)).toEqual(
-      expect.stringContaining("{bg-whitetext-[palevioletred]text-basep-1}")
+      expect.stringContaining("{bg-[white]text-[16px]pt-[7px]pr-16pb-[0]pl-pxm-auto}")
     )
   })
 })
