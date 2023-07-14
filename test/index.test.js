@@ -1,5 +1,4 @@
 import { describe, it, expect } from "vitest"
-import { stripWhitespace } from "./test-utils"
 import { transformCodeToAST } from "../src/styledComponentsToAST"
 import { generateCSSFromAST } from "../src/ASTtoCSS"
 import { convertToTailwindCSS } from "../src/CSStoTailwind"
@@ -7,41 +6,48 @@ import { convertToTailwindCSS } from "../src/CSStoTailwind"
 describe("styled-components to TailwindCSS converter flow", () => {
   it("should correctly transform valid JS input including styled-components into TailwindCSS utility classes", () => {
     const input = `
-      import styled from 'styled-components'
-      const Button = styled.button\`
-        background-color: white; 
-        font-size: 16px; 
-        padding: 7px 4rem 0 1px;
-        margin: auto;
+      const StyledButton = styled.button\`
+        color: white;
+        padding: 4rem;
+        font-size: 16px;
+        background: red;
+        margin: 4px 0 1rem 17em;
+        height: 17vh;
+        width: 720px;
+        border-bottom-width: 8px;
+        filter: hue-rotate(-180deg);
       \`
-      const Header = styled.h1\`
-        border-radius: 50%;
-        font-family: ui-sans-serif;
-        font-weight: 400;
-        line-height: 2.5rem;
-      \`
-      const Div = styled.div\`
-        max-height: 6rem;
-        min-height: 72px;
-      \`
+
+      const buttonStyles = css\`
+        background: white;
+        color: palevioletred;
+        font-size: 1em;
+        padding: 0.25em 1em;
+        border: 2px solid palevioletred;
+        border-radius: 3px;
+        transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+      \`;
     `
-    // styled-components to TailwindCSS flow showcase
-    console.log(`Initial input:\n${input}\n\n`)
 
-    const generatedAST = transformCodeToAST(input)
+    const AST = transformCodeToAST(input)
+    const CSS = generateCSSFromAST(AST)
+    const result = convertToTailwindCSS(CSS)
 
-    console.log(`Generated AST:\n\n${JSON.stringify(generatedAST)}\n\n\n`)
+    console.log(input)
+    console.log(AST)
+    console.log(CSS)
+    console.log(result)
 
-    const generatedCSS = generateCSSFromAST(generatedAST)
+    expect(result).toEqual(
+      expect.stringContaining(
+        "{ text-[white] p-16 text-[16px] bg-[red] mt-[4px] mr-[0] mb-4 ml-[17em] h-[17vh] w-[720px] border-b-8 filter -hue-rotate-180 }"
+      )
+    )
 
-    console.log(`Generated CSS:\n\n${generatedCSS}\n\n\n`)
-
-    const generatedTailwindCSS = convertToTailwindCSS(generatedCSS)
-
-    console.log(`Generated TailwindCSS:\n\n${generatedTailwindCSS}\n`)
-
-    expect(stripWhitespace(generatedTailwindCSS)).toEqual(
-      expect.stringContaining("{bg-[white]text-[16px]pt-[7px]pr-16pb-[0]pl-pxm-auto}")
+    expect(result).toEqual(
+      expect.stringContaining(
+        "{ bg-[white] text-[palevioletred] text-[1em] px-[1em] py-[0.25em] border-[2px] border-solid border-[palevioletred] rounded-[3px] transition-all }"
+      )
     )
   })
 })
