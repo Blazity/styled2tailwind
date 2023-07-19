@@ -4,7 +4,11 @@ import { traverse } from "@babel/core"
 import { NodePath } from "@babel/traverse"
 import * as t from "@babel/types"
 
-export function transformCodeToAST(input: string) {
+function createStyledCallExpression(styledIdentifier, params) {
+  return t.callExpression(t.memberExpression(styledIdentifier, styledIdentifier), params)
+}
+
+export function convertCodeToAST(input: string) {
   if (!input) {
     throw new Error("Provided input is empty")
   }
@@ -20,7 +24,6 @@ export function transformCodeToAST(input: string) {
   }
 
   const styledIdentifier = t.identifier("styled")
-  const styledProperty = t.identifier("styled")
 
   traverse(ast, {
     TaggedTemplateExpression(path: NodePath<t.TaggedTemplateExpression>) {
@@ -29,13 +32,9 @@ export function transformCodeToAST(input: string) {
       if (
         t.isMemberExpression(tag) &&
         t.isIdentifier(tag.object, { name: styledIdentifier.name }) &&
-        t.isIdentifier(tag.property, { name: styledProperty.name })
+        t.isIdentifier(tag.property, { name: styledIdentifier.name })
       ) {
-        const styledCallExpression = t.callExpression(t.memberExpression(styledIdentifier, styledProperty), [
-          tag.object,
-          tag.property,
-          quasi,
-        ])
+        const styledCallExpression = createStyledCallExpression(styledIdentifier, [tag.object, tag.property, quasi])
 
         path.replaceWith(styledCallExpression)
       }
@@ -48,10 +47,7 @@ export function transformCodeToAST(input: string) {
         const { init } = declaration
 
         if (t.isCallExpression(init) && t.isIdentifier(init.callee, { name: styledIdentifier.name })) {
-          const styledCallExpression = t.callExpression(
-            t.memberExpression(styledIdentifier, styledProperty),
-            init.arguments
-          )
+          const styledCallExpression = createStyledCallExpression(styledIdentifier, init.arguments)
 
           declaration.init = styledCallExpression
         }
@@ -62,7 +58,7 @@ export function transformCodeToAST(input: string) {
       const { source, specifiers } = path.node
 
       if (source.value === "styled-components") {
-        const importSpecifier = t.importSpecifier(styledIdentifier, styledProperty)
+        const importSpecifier = t.importSpecifier(styledIdentifier, styledIdentifier)
 
         specifiers.push(importSpecifier)
       }

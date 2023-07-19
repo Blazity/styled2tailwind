@@ -1,3 +1,38 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+export interface CustomTheme extends Record<string, undefined | Record<string, string>> {
+  media?: Record<string, string>
+  "backdrop-blur"?: Record<string, string>
+  "backdrop-brightness"?: Record<string, string>
+  "backdrop-contrast"?: Record<string, string>
+  "backdrop-grayscale"?: Record<string, string>
+  "backdrop-hue-rotate"?: Record<string, string>
+  "backdrop-invert"?: Record<string, string>
+  "backdrop-opacity"?: Record<string, string>
+  "backdrop-saturate"?: Record<string, string>
+  "backdrop-sepia"?: Record<string, string>
+  blur?: Record<string, string>
+  brightness?: Record<string, string>
+  contrast?: Record<string, string>
+  grayscale?: Record<string, string>
+  "hue-rotate"?: Record<string, string>
+  invert?: Record<string, string>
+  saturate?: Record<string, string>
+  sepia?: Record<string, string>
+  scale?: Record<string, string>
+  rotate?: Record<string, string>
+  translate?: Record<string, string>
+  skew?: Record<string, string>
+}
+
+export interface TranslatorConfig {
+  prefix?: string
+  /**
+   * @default true
+   */
+  useAllDefaultValues?: boolean
+  customTheme?: CustomTheme
+}
+
 export interface ResultCode {
   selectorName: string
   resultVal: string
@@ -5,26 +40,32 @@ export interface ResultCode {
 
 export const specialAttribute = ["@charset", "@font-face", "@import", "@keyframes"]
 
-let useAllDefaultValues = false
-let customTheme: CustomTheme = {}
+const useAllDefaultValues = false
+const customTheme: CustomTheme = {}
 
-export const hasNegative = (val: string): ["-" | "", string] => [
-  val[0] === "-" ? "-" : "",
-  val[0] === "-" ? val.slice(1) : val,
-]
+export const hasNegative = (val: string): ["-" | "", string] => {
+  const isNegative = val[0] === "-"
+  return [isNegative ? "-" : "", isNegative ? val.slice(1) : val]
+}
+
 export const getCustomVal = (val: string) => {
   val = val.replace(/\s/g, "_")
-  for (let index = 1; index < val.length; index) {
-    const char = val[index]
-    if (char === "_" && char === val[index - 1]) {
+
+  for (let index = 1; index < val.length; ) {
+    const currentChar = val[index]
+    const previousChar = val[index - 1]
+
+    if (currentChar === "_" && currentChar === previousChar) {
       val = val.slice(0, index) + val.slice(index + 1)
     } else {
       index++
     }
   }
+
   return val
 }
-export const isColor = (str: string, joinLinearGradient = false) => {
+
+export const isColor = (str: string) => {
   const namedColors = [
     "initial",
     "inherit",
@@ -180,55 +221,71 @@ export const isColor = (str: string, joinLinearGradient = false) => {
     "yellow",
     "yellowgreen",
   ]
-  const regexp =
-    /^\s*#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})\s*$|^\s*rgb\(\s*(\d{1,3}|[a-z]+)\s*,\s*(\d{1,3}|[a-z]+)\s*,\s*(\d{1,3}|[a-z]+)\s*\)\s*$|^\s*rgba\(\s*(\d{1,3}|[a-z]+)\s*,\s*(\d{1,3}|[a-z]+)\s*,\s*(\d{1,3}|[a-z]+)\s*,\s*(\d*(\.\d+)?)\s*\)\s*$|^\s*hsl\(\s*(\d+)\s*,\s*(\d*(\.\d+)?%)\s*,\s*(\d*(\.\d+)?%)\)\s*$|^\s*hsla\((\d+)\s*,\s*([\d.]+)%\s*,\s*([\d.]+)%\s*,\s*(\d*(\.\d+)?)\)\s*$/i
+
+  const isHexColor = /^\s*#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})\s*$/
+  const isRgbColor = /^\s*rgb\(\s*(\d{1,3}|[a-z]+)\s*,\s*(\d{1,3}|[a-z]+)\s*,\s*(\d{1,3}|[a-z]+)\s*\)\s*$/
+  const isRgbaColor =
+    /^\s*rgba\(\s*(\d{1,3}|[a-z]+)\s*,\s*(\d{1,3}|[a-z]+)\s*,\s*(\d{1,3}|[a-z]+)\s*,\s*(\d*(\.\d+)?)\s*\)\s*$/
+  const isHslColor = /^\s*hsl\(\s*(\d+)\s*,\s*(\d*(\.\d+)?%)\s*,\s*(\d*(\.\d+)?%)\)\s*$/
+  const isHslaColor = /^\s*hsla\((\d+)\s*,\s*([\d.]+)%\s*,\s*([\d.]+)%\s*,\s*(\d*(\.\d+)?)\)\s*$/i
+  const isLinearGradient = /^\s*linear-gradient\([\w\W]+?\)\s*$/i
+
   return (
-    regexp.test(str) ||
+    isHexColor.test(str) ||
+    isRgbColor.test(str) ||
+    isRgbaColor.test(str) ||
+    isHslColor.test(str) ||
+    isHslaColor.test(str) ||
     namedColors.includes(str) ||
-    (joinLinearGradient && /^\s*linear-gradient\([\w\W]+?\)\s*$/.test(str))
+    isLinearGradient.test(str)
   )
 }
 
 export const isUnit = (str: string) => {
-  return (
-    [
-      "em",
-      "ex",
-      "ch",
-      "rem",
-      "vw",
-      "vh",
-      "vmin",
-      "vmax",
-      "cm",
-      "mm",
-      "in",
-      "pt",
-      "pc",
-      "px",
-      "min-content",
-      "max-content",
-      "fit-content",
-      "deg",
-      "grad",
-      "rad",
-      "turn",
-      "ms",
-      "s",
-      "Hz",
-      "kHz",
-      "%",
-      "length",
-      "inherit",
-      "thick",
-      "medium",
-      "thin",
-      "initial",
-      "auto",
-    ].includes(str.replace(/[.\d\s-]/g, "")) ||
-    /^[-.\d]+$/.test(str.trim()) ||
-    /^var\(.+\)$/.test(str)
-  )
+  const supportedUnits = [
+    "em",
+    "ex",
+    "ch",
+    "rem",
+    "vw",
+    "vh",
+    "vmin",
+    "vmax",
+    "cm",
+    "mm",
+    "in",
+    "pt",
+    "pc",
+    "px",
+    "min-content",
+    "max-content",
+    "fit-content",
+    "deg",
+    "grad",
+    "rad",
+    "turn",
+    "ms",
+    "s",
+    "Hz",
+    "kHz",
+    "%",
+    "length",
+    "inherit",
+    "thick",
+    "medium",
+    "thin",
+    "initial",
+    "auto",
+  ]
+
+  const removedValues = str.replace(/[.\d\s-]/g, "")
+  const trimmedValue = str.trim()
+
+  const isIncluded = supportedUnits.includes(removedValues)
+  const isNumeric = /^[-.\d]+$/.test(trimmedValue)
+  const isVariable = /^var\(.+\)$/.test(trimmedValue)
+
+  return isIncluded || isNumeric || isVariable
 }
 
 enum CustomSelect {
@@ -238,11 +295,16 @@ enum CustomSelect {
 }
 
 export const getUnitMetacharactersVal = (val: string, excludes: CustomSelect[] = []): string | undefined => {
-  if (/^\d+\.[1-9]{2,}%$/.test(val)) {
-    val = `${Number(val.slice(0, -1))
-      .toFixed(6)
-      .replace(/(\.[1-9]{2})\d+/, "$1")}%`
+  const formatPercentage = (percentage: string): string => {
+    const number = Number(percentage.slice(0, -1))
+    const formatted = number.toFixed(6).replace(/(\.[1-9]{2})\d+/, "$1")
+    return `${formatted}%`
   }
+
+  if (/^\d+\.[1-9]{2,}%$/.test(val)) {
+    val = formatPercentage(val)
+  }
+
   const config: Record<string, string> = {
     auto: "auto",
     "50%": "1/2",
@@ -266,9 +328,13 @@ export const getUnitMetacharactersVal = (val: string, excludes: CustomSelect[] =
     "min-content": "min",
     "max-content": "max",
   }
-  excludes.forEach((key) => {
+
+  const filterConfig = (key: string) => {
     delete config[key]
-  })
+  }
+
+  excludes.forEach(filterConfig)
+
   return config[val]
 }
 
@@ -592,7 +658,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
     "background-color",
     (val) =>
       ({ transparent: "bg-transparent", currentColor: "bg-current", currentcolor: "bg-current" }[val] ??
-      (isColor(val, true) ? `bg-[${getCustomVal(val)}]` : "")),
+      (isColor(val) ? `bg-[${getCustomVal(val)}]` : "")),
   ],
   ["background-image", (val) => ({ none: "bg-none" }[val] ?? `bg-[${getCustomVal(val)}]`)],
   [
@@ -667,7 +733,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
       }
     },
   ],
-  ["border-bottom-color", (val) => (isColor(val, true) ? `[border-bottom-color:${getCustomVal(val)}]` : "")],
+  ["border-bottom-color", (val) => (isColor(val) ? `[border-bottom-color:${getCustomVal(val)}]` : "")],
   [
     "border-bottom-left-radius",
     (val) =>
@@ -727,7 +793,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
       }
     },
   ],
-  ["border-left-color", (val) => (isColor(val, true) ? `[border-left-color:${getCustomVal(val)}]` : "")],
+  ["border-left-color", (val) => (isColor(val) ? `[border-left-color:${getCustomVal(val)}]` : "")],
   [
     "border-left-style",
     (val) => ((propertyMap.get("border-style") as Record<string, string>)[val] ? `[border-left-style:${val}]` : ""),
@@ -770,7 +836,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
       }
     },
   ],
-  ["border-right-color", (val) => (isColor(val, true) ? `[border-right-color:${getCustomVal(val)}]` : "")],
+  ["border-right-color", (val) => (isColor(val) ? `[border-right-color:${getCustomVal(val)}]` : "")],
   [
     "border-right-style",
     (val) => ((propertyMap.get("border-style") as Record<string, string>)[val] ? `[border-right-style:${val}]` : ""),
@@ -797,7 +863,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
       }
     },
   ],
-  ["border-top-color", (val) => (isColor(val, true) ? `[border-top-color:${getCustomVal(val)}]` : "")],
+  ["border-top-color", (val) => (isColor(val) ? `[border-top-color:${getCustomVal(val)}]` : "")],
   [
     "border-top-left-radius",
     (val) =>
@@ -926,7 +992,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
     "color",
     (val) =>
       ({ transparent: "text-transparent", currentColor: "text-current", currentcolor: "text-current" }[val] ??
-      (isColor(val, true) ? `text-[${getCustomVal(val)}]` : "")),
+      (isColor(val) ? `text-[${getCustomVal(val)}]` : "")),
   ],
   ["color-scheme", (val) => `[color-scheme:${getCustomVal(val)}]`],
   ["column-count", (val) => `[column-count:${getCustomVal(val)}]`],
@@ -940,7 +1006,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
   ],
   ["column-gap", (val) => ({ "0": "gap-x-0" }[val] ?? (isUnit(val) ? `gap-x-[${val}]` : ""))],
   ["column-rule", (val) => `[column-rule:${getCustomVal(val)}]`],
-  ["column-rule-color", (val) => (isColor(val, true) ? `[column-rule-color:${getCustomVal(val)}]` : "")],
+  ["column-rule-color", (val) => (isColor(val) ? `[column-rule-color:${getCustomVal(val)}]` : "")],
   [
     "column-rule-style",
     {
@@ -1028,7 +1094,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
     "fill",
     (val) =>
       ({ currentColor: "fill-current", currentcolor: "fill-current" }[val] ??
-      (isColor(val, true) ? `fill-[${getCustomVal(val)}]` : "")),
+      (isColor(val) ? `fill-[${getCustomVal(val)}]` : "")),
   ],
   [
     "filter",
@@ -1698,7 +1764,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
       }[val] ?? (isUnit(val) ? `order-[${val}]` : "")),
   ],
   ["outline", (val) => `outline-[${getCustomVal(val)}]`],
-  ["outline-color", (val) => (isColor(val, true) ? `outline-[${getCustomVal(val)}]` : "")],
+  ["outline-color", (val) => (isColor(val) ? `outline-[${getCustomVal(val)}]` : "")],
   ["outline-offset", (val) => (isUnit(val) ? `outline-offset-[${val}]` : "")],
   [
     "outline-style",
@@ -1963,7 +2029,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
       ({
         currentColor: "stroke-current",
         currentcolor: "stroke-current",
-      }[val] ?? (isColor(val, true) ? `stroke-[${getCustomVal(val)}]` : "")),
+      }[val] ?? (isColor(val) ? `stroke-[${getCustomVal(val)}]` : "")),
   ],
   ["stroke-width", (val) => (isUnit(val) ? `stroke-[${val}]` : "")],
   ["tab-size", (val) => (isUnit(val) ? `[tab-size:${val}]` : "")],
@@ -2026,7 +2092,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
       none: "no-underline",
     },
   ],
-  ["text-decoration-color", (val) => (isColor(val, true) ? `[text-decoration-color:${getCustomVal(val)}]` : "")],
+  ["text-decoration-color", (val) => (isColor(val) ? `[text-decoration-color:${getCustomVal(val)}]` : "")],
   [
     "text-decoration-line",
     {
@@ -2051,7 +2117,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
       inherit: "[text-decoration-style:inherit]",
     },
   ],
-  ["text-emphasis-color", (val) => (isColor(val, true) ? `[text-emphasis-color:${getCustomVal(val)}]` : "")],
+  ["text-emphasis-color", (val) => (isColor(val) ? `[text-emphasis-color:${getCustomVal(val)}]` : "")],
   ["text-emphasis-position", (val) => `[text-emphasis-position:${getCustomVal(val)}]`],
   ["text-emphasis-style", (val) => `[text-emphasis-style:${getCustomVal(val)}]`],
   ["text-indent", (val) => (isUnit(val) ? `[text-indent:${val}]` : "")],
@@ -2517,17 +2583,30 @@ export const parsingCode = (code: string): CssCodeParse[] => {
   let index = 0
   let isSelectorName = true
   let bracketsCount = 0
+
+  const addToTmpCodes = (char: string) => {
+    if (!tmpCodes[index]) {
+      tmpCodes[index] = {
+        selectorName: "",
+        cssCode: "",
+      }
+    }
+    tmpCodes[index][isSelectorName ? "selectorName" : "cssCode"] += char
+  }
+
   for (let i = 0; i < code.length; i++) {
     const char = code[i]
     if (["{", "}"].includes(char)) {
       if (char === "{") {
-        if (bracketsCount++ === 0) {
+        bracketsCount++
+        if (bracketsCount === 1) {
           isSelectorName = false
         } else {
-          tmpCodes[index][isSelectorName ? "selectorName" : "cssCode"] += char
+          addToTmpCodes(char)
         }
       } else {
-        if (--bracketsCount === 0) {
+        bracketsCount--
+        if (bracketsCount === 0) {
           const cssCode = tmpCodes[index].cssCode
           if (typeof cssCode === "string" && cssCode.includes("{")) {
             tmpCodes[index].cssCode = parsingCode(cssCode)
@@ -2535,36 +2614,20 @@ export const parsingCode = (code: string): CssCodeParse[] => {
           index++
           isSelectorName = true
         } else {
-          tmpCodes[index][isSelectorName ? "selectorName" : "cssCode"] += char
+          addToTmpCodes(char)
         }
       }
     } else {
-      if (!tmpCodes[index]) {
-        tmpCodes[index] = {
-          selectorName: "",
-          cssCode: "",
-        }
-      }
-      tmpCodes[index][isSelectorName ? "selectorName" : "cssCode"] += char
+      addToTmpCodes(char)
     }
   }
-  return tmpCodes.map((v) => ({
+
+  const trimFields = (v: CssCodeParse) => ({
     selectorName: v.selectorName.trim(),
     cssCode: typeof v.cssCode === "string" ? v.cssCode.trim() : v.cssCode,
-  }))
-}
+  })
 
-const moreDefaultMediaVals: Record<string, string> = {
-  "@media(min-width:640px)": "sm",
-  "@media(min-width:768px)": "md",
-  "@media(min-width:1024px)": "lg",
-  "@media(min-width:1280px)": "xl",
-  "@media(min-width:1536px)": "2xl",
-  "@media_not_all_and(min-width:640px)": "max-sm",
-  "@media_not_all_and(min-width:768px)": "max-md",
-  "@media_not_all_and(min-width:1024px)": "max-lg",
-  "@media_not_all_and(min-width:1280px)": "max-xl",
-  "@media_not_all_and(min-width:1536px)": "max-2xl",
+  return tmpCodes.map(trimFields)
 }
 
 const moreDefaultValuesMap: Record<string, Record<string, string>> = {
@@ -3156,22 +3219,22 @@ export const getResultCode = (it: CssCodeParse, prefix = "", config: TranslatorC
 
   const cssCodeList = it.cssCode.split(";").filter(Boolean)
 
-  const resultVals = cssCodeList
-    .map((v) => {
-      let [key, val] = v.split(":")
-      key = key.trim()
-      val = val.trim()
+  const processCode = (code: string) => {
+    let [key, val] = code.includes(":") ? code.split(":") : [code, ""]
+    key = key.trim()
+    val = val ? val.trim() : val
 
-      const pipeVal =
-        getPropertyPipeValue(key, val, config.customTheme, config.useAllDefaultValues) ||
-        getFallbackPropertyValue(key, val)
+    const pipeVal =
+      getPropertyPipeValue(key, val, config.customTheme, config.useAllDefaultValues) ||
+      getFallbackPropertyValue(key, val)
 
-      return applyPrefixesAndImportant(pipeVal, key.startsWith("-"), prefix)
-    })
-    .filter(Boolean)
+    return applyPrefixesAndImportant(pipeVal, key.startsWith("-"), prefix)
+  }
 
-  // Remove trailing semicolon from each Tailwind property
-  const formattedResultVals = resultVals.map((val) => val.replace(/;$/, ""))
+  const resultVals = cssCodeList.map(processCode).filter(Boolean)
+
+  const removeTrailingSemicolon = (val: string) => val.replace(/;$/, "")
+  const formattedResultVals = resultVals.map(removeTrailingSemicolon)
 
   return {
     selectorName: it.selectorName,
@@ -3185,19 +3248,19 @@ export const getPropertyPipeValue = (
   customTheme?: Record<string, any>,
   useAllDefaultValues?: boolean
 ): string | undefined => {
-  // Check for initial or inherit values
-  if (value === "initial" || value === "inherit") {
+  const predefinedValues = ["initial", "inherit"]
+
+  if (predefinedValues.includes(value)) {
     return `[${key}:${value}]`
   }
 
-  // Get property pipe function from map
   const pipeFnOrMapEntry = propertyMap.get(key)
 
-  // Resolve property value using custom theme or default values map
-  const resolvedValue =
-    customTheme?.[key]?.[value] ||
-    (useAllDefaultValues && moreDefaultValuesMap[key]?.[value]) ||
-    (pipeFnOrMapEntry instanceof Function ? pipeFnOrMapEntry(value) : pipeFnOrMapEntry?.[value])
+  const resolveValue = (mapKey) =>
+    customTheme?.[mapKey]?.[value] || (useAllDefaultValues && moreDefaultValuesMap[mapKey]?.[value])
+  const isFunction = pipeFnOrMapEntry instanceof Function
+
+  const resolvedValue = resolveValue(key) || (isFunction ? pipeFnOrMapEntry(value) : pipeFnOrMapEntry?.[value])
 
   return resolvedValue?.trim()
 }
@@ -3207,9 +3270,10 @@ export const getFallbackPropertyValue = (key: string, value: string): string => 
     return undefined
   }
 
-  if (value.includes("!important")) {
-    value = value.replace("!important", "").trim()
-    return `!${value}`
+  const importantFlag = "!important"
+
+  if (value.includes(importantFlag)) {
+    return `!${value.replace(importantFlag, "").trim()}`
   }
 
   return ""
@@ -3221,106 +3285,12 @@ export const applyPrefixesAndImportant = (pipeVal: string, isNegativeProperty: b
   }
 
   const prefixWithSpace = prefix ? `${prefix}:` : prefix
-  let prefixedValue
+  const propertiesRequiringPrefix = ["backdrop-filter", "filter", "transform"]
 
-  if (
-    isNegativeProperty ||
-    pipeVal.startsWith("backdrop-filter") ||
-    pipeVal.startsWith("filter") ||
-    pipeVal.startsWith("transform")
-  ) {
-    prefixedValue = `${prefixWithSpace}${pipeVal}`
-  } else {
-    const values = pipeVal.split(" ")
-    prefixedValue = values.map((v) => `${prefixWithSpace}${v}`).join(" ")
+  if (isNegativeProperty || propertiesRequiringPrefix.some((property) => pipeVal.startsWith(property))) {
+    return `${prefixWithSpace}${pipeVal}`
   }
 
-  return prefixedValue
-}
-
-export interface CustomTheme extends Record<string, undefined | Record<string, string>> {
-  media?: Record<string, string>
-  "backdrop-blur"?: Record<string, string>
-  "backdrop-brightness"?: Record<string, string>
-  "backdrop-contrast"?: Record<string, string>
-  "backdrop-grayscale"?: Record<string, string>
-  "backdrop-hue-rotate"?: Record<string, string>
-  "backdrop-invert"?: Record<string, string>
-  "backdrop-opacity"?: Record<string, string>
-  "backdrop-saturate"?: Record<string, string>
-  "backdrop-sepia"?: Record<string, string>
-  blur?: Record<string, string>
-  brightness?: Record<string, string>
-  contrast?: Record<string, string>
-  grayscale?: Record<string, string>
-  "hue-rotate"?: Record<string, string>
-  invert?: Record<string, string>
-  saturate?: Record<string, string>
-  sepia?: Record<string, string>
-  scale?: Record<string, string>
-  rotate?: Record<string, string>
-  translate?: Record<string, string>
-  skew?: Record<string, string>
-}
-
-export interface TranslatorConfig {
-  prefix?: string
-  /**
-   * @default true
-   */
-  useAllDefaultValues?: boolean
-  customTheme?: CustomTheme
-}
-
-export const defaultTranslatorConfig = {
-  prefix: "",
-  useAllDefaultValues: true,
-  customTheme: {},
-}
-
-export const convertToTailwindCSS = (code: string, config: TranslatorConfig = defaultTranslatorConfig): string => {
-  if (specialAttribute.map((v) => code.includes(v)).filter((v) => v).length > 0) {
-    return "Syntax error"
-  }
-  useAllDefaultValues = config.useAllDefaultValues ?? defaultTranslatorConfig.useAllDefaultValues
-  customTheme = config.customTheme ?? defaultTranslatorConfig.customTheme
-  let tailwindOutput = "" // This is the output string which will contain the TailwindCSS classes.
-  parsingCode(code)
-    .map((it) => {
-      if (typeof it.cssCode === "string") {
-        return getResultCode(it, "", config)
-      } else if (it.selectorName.includes("@media")) {
-        return it.cssCode.map((v) => {
-          const mediaName = getCustomVal(
-            it.selectorName.replace(/\(.+\)/g, (v) => v.replace(/\s/g, "")).replace(/\s+\(/g, "(")
-          )
-          const res = getResultCode(
-            v,
-            customTheme.media?.[it.selectorName] ||
-              (config.useAllDefaultValues && moreDefaultMediaVals[mediaName]) ||
-              `[${mediaName}]`,
-            config
-          )
-          return res
-            ? {
-                selectorName: `${it.selectorName}-->${res.selectorName}`,
-                resultVal: res.resultVal,
-              }
-            : null
-        })
-      } else {
-        return null
-      }
-    })
-    .filter((v) => v !== null)
-    .forEach((v) => {
-      if (Array.isArray(v)) {
-        v.forEach(({ selectorName, resultVal }) => {
-          tailwindOutput += `${selectorName} { ${resultVal} } `
-        })
-      } else {
-        tailwindOutput += `${v.selectorName} { ${v.resultVal} } `
-      }
-    })
-  return tailwindOutput.trim()
+  const values = pipeVal.split(" ")
+  return values.map((v) => `${prefixWithSpace}${v}`).join(" ")
 }
