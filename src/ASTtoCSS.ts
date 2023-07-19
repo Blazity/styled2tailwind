@@ -1,63 +1,85 @@
-import { Node } from "@babel/core"
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as t from "@babel/types"
 
-export function generateCSSFromAST(ast: Node): string {
-  let cssCode = ""
-  const generatedSelectors: Set<string> = new Set()
-
-  function generateRandomSelector(): string {
-    const characters = "abcdefghijklmnopqrstuvwxyz"
-    let randomSelector = ""
-
-    for (let i = 0; i < 5; i++) {
-      const randomIndex = Math.floor(Math.random() * characters.length)
-      randomSelector += characters.charAt(randomIndex)
-    }
-
-    return randomSelector
+export function convertASTtoCSS(ast: t.File): Array<{ name: string; staticStyles: string; dynamicStyles: string }> {
+  if (!ast) {
+    throw new Error("Provided input is empty!")
   }
 
-  function traverseAST(node: Node, selectorPrefix = "") {
+  if (!ast.program || !ast.program.body) {
+    throw new Error("Provided input is not valid AST!")
+  }
+
+  function createDynamicStyles(rule) {
+    const [prop, value] = rule.split(":").map((val: any) => val.trim())
+
+    if (rule.includes("(props) => props.")) {
+      return `${prop}: ${value.replace("(props) => props.", "").replace(";", "")}, `
+    } else if (rule.includes("({") && rule.includes("}) =>")) {
+      const destructuredProp = value.match(/\{\s*(\w+)\s*\}/)[1]
+      return `${prop}: ${destructuredProp}, `
+    } else {
+      return `${prop}: ${value.replace(";", "")}, `
+    }
+  }
+
+  function traverseComponent(declaration) {
+    const component = {
+      name: "div",
+      staticStyles: "",
+      dynamicStyles: "",
+    }
+
+    traverseAST(declaration, component)
+
+    component.staticStyles = `{ ${component.staticStyles.replace(/;\s*$/, "")} }`
+    component.dynamicStyles = `{ ${component.dynamicStyles.replace(/,\s*$/, "")} }`
+
+    return component
+  }
+
+  const styledComponents = []
+
+  function traverseAST(node: t.Node, component: { name: string; staticStyles: string; dynamicStyles: string }) {
     if (t.isTaggedTemplateExpression(node)) {
-      const cssRule = node.quasi.quasis
-        .map((element) => element.value.raw)
-        .join("")
-        .trim()
+      const cssRules = node.quasi.quasis[0].value.raw.split("\n")
 
-      if (cssRule.length > 0) {
-        let randomSelector
-
-        do {
-          randomSelector = generateRandomSelector()
-        } while (generatedSelectors.has(randomSelector))
-
-        const selector = `${selectorPrefix}.${randomSelector}`
-        generatedSelectors.add(randomSelector)
-        cssCode += `${selector} { ${cssRule} }\n`
+      if (t.isMemberExpression(node.tag)) {
+        component.name = (node.tag.property as t.Identifier).name
       }
+
+      cssRules.forEach((rule) => {
+        if (
+          rule.includes("(props) => props.") ||
+          (rule.includes("({") && rule.includes("}) =>")) ||
+          rule.includes("props[") ||
+          rule.includes("(") ||
+          rule.includes("?") ||
+          rule.includes("&&") ||
+          rule.includes("||")
+        ) {
+          component.dynamicStyles += createDynamicStyles(rule)
+        } else {
+          component.staticStyles += `${rule.trim()} `
+        }
+      })
     }
 
-    Object.values(node).forEach((childNode) => {
-      if (!childNode || typeof childNode !== "object") return
-
-      if (Array.isArray(childNode)) {
-        childNode.forEach((child) => traverseAST(child, selectorPrefix))
-      } else if (t.isJSXElement(childNode)) {
-        const { openingElement, closingElement } = childNode
-
-        ;[openingElement, closingElement].forEach((element) => {
-          if (!element || !t.isJSXIdentifier(element.name)) return
-
-          const childSelector = `${selectorPrefix} ${element.name.name}`
-          traverseAST(element, childSelector)
-        })
-      } else {
-        traverseAST(childNode, selectorPrefix)
+    for (const key in node) {
+      if (node[key] && typeof node[key] === "object") {
+        traverseAST(node[key] as t.Node, component)
       }
-    })
+    }
   }
 
-  traverseAST(ast)
+  for (const node of ast.program.body) {
+    if (t.isVariableDeclaration(node) && node.declarations) {
+      for (const declaration of node.declarations) {
+        const component = traverseComponent(declaration)
+        styledComponents.push(component)
+      }
+    }
+  }
 
-  return cssCode
+  return styledComponents
 }

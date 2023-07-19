@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest"
 import {
-  convertToTailwindCSS,
   hasNegative,
   getCustomVal,
   isColor,
@@ -12,52 +11,56 @@ import {
   getPropertyPipeValue,
   getFallbackPropertyValue,
   applyPrefixesAndImportant,
-} from "../src/CSStoTailwind"
-import { stripWhitespace } from "./test-utils"
+} from "../src/CSStoTailwind/converter-utils"
+import { convertCSStoTailwind } from "../src/CSStoTailwind/converter"
 
 describe("#convertToTailwind", () => {
   it("should convert CSS input to Tailwind", () => {
-    const input = stripWhitespace(`.button { background-color: white; font-size: 16px; padding: 7px; }`)
-    const result = convertToTailwindCSS(input)
+    const input = [{ name: "button", staticStyles: "{  color: blue }", dynamicStyles: "{  }" }]
+    const result = convertCSStoTailwind(input)
 
-    expect(result).toEqual(expect.stringContaining("{ bg-[white] text-[16px] p-[7px] }"))
-  })
-
-  it("should convert CSS code generated from AST to valid TailwindCSS", () => {
-    const input = stripWhitespace(".mzoqw { background-color: white; color: red; font-size: 1rem; margin: 4rem; }")
-    const result = convertToTailwindCSS(input)
-
-    expect(result).toEqual(expect.stringContaining("{ bg-[white] text-[red] text-[1rem] m-16 }"))
+    expect(result).toEqual(expect.stringContaining("<button className='text-[blue]'></button>"))
   })
 
   it("should convert invalid CSS properties to TailwindCSS", () => {
-    const input = stripWhitespace(
-      ".mzoqw { background-color: white; color: red; non-existent: property; font-size: 1rem; margin: 4rem; }"
-    )
-    const result = convertToTailwindCSS(input)
+    const input = [{ name: "button", staticStyles: "{  color: red; nonexistent: property }", dynamicStyles: "{  }" }]
+    const result = convertCSStoTailwind(input)
 
-    expect(result).toEqual(expect.stringContaining("{ bg-[white] text-[red] text-[1rem] m-16 }")) // Invalid property is ignored
+    expect(result).toEqual(expect.stringContaining("<button className='text-[red]'></button>")) // Invalid property is ignored
   })
 
   it("should convert prefixed CSS properties (i.e. --webkit) to TailwindCSS", () => {
-    const input = ".mzoqw {  -webkit-font-smoothing: antialiased; }"
-    const result = convertToTailwindCSS(input)
+    const input = [
+      { name: "button", staticStyles: "{  color: blue; -webkit-font-smoothing: antialiased; }", dynamicStyles: "{  }" },
+    ]
+    const result = convertCSStoTailwind(input)
 
-    expect(result).toEqual(expect.stringContaining("{ antialiased }"))
+    expect(result).toEqual(expect.stringContaining("<button className='text-[blue] antialiased'></button>"))
   })
 
   it("should convert shorthand CSS properties (i.e. padding: 1px 0 3px 5px) to TailwindCSS", () => {
-    const input = ".mzoqw { padding: 1px 0 4px 5px; font-size: 1rem; }"
-    const result = convertToTailwindCSS(input)
+    const input = [{ name: "button", staticStyles: "{  padding: 4px 0 1rem 7em; }", dynamicStyles: "{  }" }]
+    const result = convertCSStoTailwind(input)
 
-    expect(result).toEqual(expect.stringContaining("{ pt-px pr-[0] pb-[4px] pl-[5px] text-[1rem] }"))
+    expect(result).toEqual(expect.stringContaining("<button className='pt-[4px] pr-[0] pb-[1rem] pl-[7em]'></button>"))
   })
 
   it("should convert CSS properties with a decimal to TailwindCSS", () => {
-    const input = ".mzoqw { width: 50.5%; height: 50.4px }"
-    const result = convertToTailwindCSS(input)
+    const input = [{ name: "button", staticStyles: "{  width: 50.5%; height: 50.4px }", dynamicStyles: "{  }" }]
+    const result = convertCSStoTailwind(input)
 
-    expect(result).toEqual(expect.stringContaining("{ w-[50.5%] h-[50.4px] }"))
+    expect(result).toEqual(expect.stringContaining("<button className='w-[50.5%] h-[50.4px]'></button>"))
+  })
+
+  it("should convert CSS input with dynamic properties", () => {
+    const input = [
+      { name: "button", staticStyles: "{  width: 50.5%; height: 50.4px }", dynamicStyles: "{ color: customColor }" },
+    ]
+    const result = convertCSStoTailwind(input)
+
+    expect(result).toEqual(
+      expect.stringContaining("<button className='w-[50.5%] h-[50.4px]' style={{color: customColor}}></button>")
+    )
   })
 })
 

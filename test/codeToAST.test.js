@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest"
-import { transformCodeToAST } from "../src/styledComponentsToAST"
+import { convertCodeToAST } from "../src/codeToAST"
 import { findPropertyByValue } from "./test-utils"
 
-describe("#transformCodeToAST", () => {
+describe("#convertCodeToAST", () => {
   it("should contain a valid TemplateElement type", () => {
     const input = `
       import styled from 'styled-components'
@@ -16,7 +16,7 @@ describe("#transformCodeToAST", () => {
       \`
     `
 
-    expect(findPropertyByValue(transformCodeToAST(input), "type", "TemplateElement")).toBeTruthy()
+    expect(findPropertyByValue(convertCodeToAST(input), "type", "TemplateElement")).toBeTruthy()
   })
 
   it("should contain properties that are equal to the input code", () => {
@@ -31,7 +31,7 @@ describe("#transformCodeToAST", () => {
       \`
     `
 
-    const result = findPropertyByValue(transformCodeToAST(input), "value", {
+    const result = findPropertyByValue(convertCodeToAST(input), "value", {
       raw: "\nbackground: white;\n color: palevioletred;\nfont-size: 1em;\npadding: 0.25em 1em;\nborder: 2px solid palevioletred;\nborder-radius: 3px;\n",
       cooked:
         "\nbackground: white;\ncolor: palevioletred;\nfont-size: 1em;\npadding: 0.25em 1em;\nborder: 2px solid palevioletred;\nborder-radius: 3px;\n",
@@ -43,8 +43,8 @@ describe("#transformCodeToAST", () => {
   it("should throw an error if the input is empty", () => {
     const input = ""
 
-    expect(() => transformCodeToAST(input)).toThrowError(/^Provided input is empty$/)
-    expect(() => transformCodeToAST(input)).not.toThrowError(/^Any other error/)
+    expect(() => convertCodeToAST(input)).toThrowError(/^Provided input is empty$/)
+    expect(() => convertCodeToAST(input)).not.toThrowError(/^Any other error/)
   })
 
   it("should throw an error if the input is not valid JavaScript code", () => {
@@ -61,7 +61,7 @@ describe("#transformCodeToAST", () => {
       \`
     `
 
-    expect(() => transformCodeToAST(input)).toThrowError(/^Input is not valid JavaScript code/)
+    expect(() => convertCodeToAST(input)).toThrowError(/^Input is not valid JavaScript code/)
   })
 
   it("should transform styled-component CSS interpolation into AST", () => {
@@ -76,7 +76,7 @@ describe("#transformCodeToAST", () => {
       \`
     `
 
-    const ast = transformCodeToAST(input)
+    const ast = convertCodeToAST(input)
 
     expect(findPropertyByValue(ast, "type", "TemplateElement")).toBeTruthy()
     expect(findPropertyByValue(ast, "value", { raw: "\nbackground:", cooked: "\nbackground:" })).toBeTruthy()

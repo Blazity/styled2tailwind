@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest"
-import { transformCodeToAST } from "../src/styledComponentsToAST"
-import { generateCSSFromAST } from "../src/ASTtoCSS"
-import { convertToTailwindCSS } from "../src/CSStoTailwind"
+import { convertCodeToAST } from "../src/codeToAST"
+import { convertASTtoCSS } from "../src/ASTtoCSS"
+import { convertCSStoTailwind } from "../src/CSStoTailwind/converter"
 
 describe("styled-components to TailwindCSS converter flow", () => {
   it("should correctly transform valid JS input including styled-components into TailwindCSS utility classes", () => {
@@ -9,45 +9,44 @@ describe("styled-components to TailwindCSS converter flow", () => {
       const StyledButton = styled.button\`
         color: white;
         padding: 4rem;
-        font-size: 16px;
-        background: red;
-        margin: 4px 0 1rem 17em;
-        height: 17vh;
-        width: 720px;
-        border-bottom-width: 8px;
-        filter: hue-rotate(-180deg);
+        height: ${(props) => props.customHeight};
+        border: ${(props) => props.customBorder};
+        background-color: ${({ destructuredProp }) => destructuredProp};
       \`
 
-      const buttonStyles = css\`
-        background: white;
-        color: palevioletred;
-        font-size: 1em;
-        padding: 0.25em 1em;
-        border: 2px solid palevioletred;
-        border-radius: 3px;
-        transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
-      \`;
+      const StyledHeader = styled.h1\`
+        color: ${(props) => props.customColor};
+        height: 100px;
+        background-color: red;
+      \`
+
+      const StyledDiv = styled.div\`
+        color: ${({ anotherDestructuredProp }) => anotherDestructuredProp};
+        width: auto;
+      \`
     `
 
-    const AST = transformCodeToAST(input)
-    const CSS = generateCSSFromAST(AST)
-    const result = convertToTailwindCSS(CSS)
+    const AST = convertCodeToAST(input)
+    const css = convertASTtoCSS(AST)
+    const result = convertCSStoTailwind(css)
 
     console.log(input)
-    console.log(AST)
-    console.log(CSS)
+    console.log(JSON.stringify(AST))
+    console.log(css)
     console.log(result)
 
     expect(result).toEqual(
       expect.stringContaining(
-        "{ text-[white] p-16 text-[16px] bg-[red] mt-[4px] mr-[0] mb-4 ml-[17em] h-[17vh] w-[720px] border-b-8 filter -hue-rotate-180 }"
+        "<button className='text-[white] p-[4rem]' style={{height: customHeight, border: customBorder, background-color: destructuredProp}}></button>"
       )
     )
 
     expect(result).toEqual(
-      expect.stringContaining(
-        "{ bg-[white] text-[palevioletred] text-[1em] px-[1em] py-[0.25em] border-[2px] border-solid border-[palevioletred] rounded-[3px] transition-all }"
-      )
+      expect.stringContaining("<h1 className='h-[100px] bg-[red]' style={{color: customColor}}></h1>")
+    )
+
+    expect(result).toEqual(
+      expect.stringContaining("<div className='w-auto' style={{color: anotherDestructuredProp}}></div>")
     )
   })
 })
