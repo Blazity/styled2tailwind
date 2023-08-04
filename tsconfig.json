@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "jsx": "react",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "target": "ES2020",
@@ -7,6 +8,5 @@
     "outDir": "dist",
     "skipLibCheck": true
   },
-  "include": ["src", "dist/exampleInput.jsx", "dist/index.js"],
-  "exclude": ["dist", "node_modules"]
+  "include": ["src/**/*"]
 }
