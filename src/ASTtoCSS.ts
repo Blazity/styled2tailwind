@@ -154,6 +154,15 @@ export function convertASTtoCSS(ast: t.File): Array<{
           styledComponents.push(component)
         }
       }
+    } else if (t.isExportNamedDeclaration(node) || t.isExportDefaultDeclaration(node)) {
+      if (node.declaration && t.isVariableDeclaration(node.declaration)) {
+        for (const declaration of node.declaration.declarations) {
+          if (t.isVariableDeclarator(declaration) && t.isIdentifier(declaration.id)) {
+            const component = traverseComponent(declaration)
+            styledComponents.push(component)
+          }
+        }
+      }
     }
   }
 
