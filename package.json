@@ -1,13 +1,15 @@
 {
   "name": "styled2tailwind",
   "version": "1.0.0",
-  "main": "index.ts",
   "type": "module",
+  "bin": {
+    "styled2tailwind": "dist/cli.js"
+  },
   "scripts": {
     "build": "tsc",
-    "convertToAST": "node dist/styledComponentsToAST.js",
     "test": "vitest",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "dev": "npx nodemon --watch src/**/*.tsx --exec yarn build"
   },
   "repository": "git@github.com:Blazity/styled2tailwind.git",
   "author": "Blazity",
@@ -24,6 +26,8 @@
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "@vitest/coverage-v8": "^0.34.0",
+    "@types/react": "^18.2.15",
+    "babel-plugin-styled-components": "^2.1.4",
     "eslint": "^8.43.0",
     "prettier": "^3.0.0",
     "prettier-plugin-tailwindcss": "^0.4.0",
@@ -31,6 +35,14 @@
     "vitest": "^0.34.0"
   },
   "dependencies": {
-    "lodash": "^4.17.21"
+    "@babel/generator": "^7.22.9",
+    "@babel/parser": "^7.22.7",
+    "@inkjs/ui": "^1.0.0",
+    "fast-glob": "^3.3.1",
+    "ink": "^4.3.0",
+    "lodash": "^4.17.21",
+    "pastel": "^2.0.2",
+    "react": "^18.2.0",
+    "zod": "^3.21.4"
   }
 }

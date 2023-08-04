@@ -16,50 +16,173 @@ import { convertCSStoTailwind } from "../src/CSStoTailwind/converter"
 
 describe("#convertToTailwind", () => {
   it("should convert CSS input to Tailwind", () => {
-    const input = [{ name: "button", staticStyles: "{  color: blue }", dynamicStyles: "{  }" }]
-    const result = convertCSStoTailwind(input)
-
-    expect(result).toEqual(expect.stringContaining("<button className='text-[blue]'></button>"))
-  })
-
-  it("should convert invalid CSS properties to TailwindCSS", () => {
-    const input = [{ name: "button", staticStyles: "{  color: red; nonexistent: property }", dynamicStyles: "{  }" }]
-    const result = convertCSStoTailwind(input)
-
-    expect(result).toEqual(expect.stringContaining("<button className='text-[red]'></button>")) // Invalid property is ignored
-  })
-
-  it("should convert prefixed CSS properties (i.e. --webkit) to TailwindCSS", () => {
     const input = [
-      { name: "button", staticStyles: "{  color: blue; -webkit-font-smoothing: antialiased; }", dynamicStyles: "{  }" },
-    ]
-    const result = convertCSStoTailwind(input)
-
-    expect(result).toEqual(expect.stringContaining("<button className='text-[blue] antialiased'></button>"))
-  })
-
-  it("should convert shorthand CSS properties (i.e. padding: 1px 0 3px 5px) to TailwindCSS", () => {
-    const input = [{ name: "button", staticStyles: "{  padding: 4px 0 1rem 7em; }", dynamicStyles: "{  }" }]
-    const result = convertCSStoTailwind(input)
-
-    expect(result).toEqual(expect.stringContaining("<button className='pt-[4px] pr-[0] pb-[1rem] pl-[7em]'></button>"))
-  })
-
-  it("should convert CSS properties with a decimal to TailwindCSS", () => {
-    const input = [{ name: "button", staticStyles: "{  width: 50.5%; height: 50.4px }", dynamicStyles: "{  }" }]
-    const result = convertCSStoTailwind(input)
-
-    expect(result).toEqual(expect.stringContaining("<button className='w-[50.5%] h-[50.4px]'></button>"))
-  })
-
-  it("should convert CSS input with dynamic properties", () => {
-    const input = [
-      { name: "button", staticStyles: "{  width: 50.5%; height: 50.4px }", dynamicStyles: "{ color: customColor }" },
+      {
+        componentName: "Button",
+        tagName: "button",
+        staticStyles:
+          "{  background: white; color: palevioletred; font-size: 1em; &:hover { background: palevioletred; color: white; }   }",
+        dynamicStyles: "{  }",
+        usedIn: [{ usage: "<Button>test</Button>", props: "" }],
+      },
     ]
     const result = convertCSStoTailwind(input)
 
     expect(result).toEqual(
-      expect.stringContaining("<button className='w-[50.5%] h-[50.4px]' style={{color: customColor}}></button>")
+      expect.arrayContaining([
+        {
+          componentName: "Button",
+          tailwindTag: [
+            {
+              tag: "<button className='bg-[palevioletred] text-[white]' ></button>",
+              usage: "<Button>test</Button>",
+              props: "",
+            },
+          ],
+        },
+      ])
+    )
+  })
+
+  it("should convert invalid CSS properties to TailwindCSS", () => {
+    const input = [
+      {
+        componentName: "Button",
+        tagName: "button",
+        staticStyles:
+          "{  background: white; color: palevioletred; non-existent: property; font-size: 1em; &:hover { background: palevioletred; color: white; }   }",
+        dynamicStyles: "{  }",
+        usedIn: [{ usage: "<Button>test</Button>", props: "" }],
+      },
+    ]
+    const result = convertCSStoTailwind(input)
+
+    expect(result).toEqual(
+      expect.arrayContaining([
+        {
+          componentName: "Button",
+          tailwindTag: [
+            {
+              tag: "<button className='bg-[palevioletred] text-[white]' ></button>",
+              usage: "<Button>test</Button>",
+              props: "",
+            },
+          ],
+        },
+      ])
+    ) // Invalid property is ignored
+  })
+
+  it("should convert prefixed CSS properties (i.e. --webkit) to TailwindCSS", () => {
+    const input = [
+      {
+        componentName: "Button",
+        tagName: "button",
+        staticStyles:
+          "{  background: white; color: palevioletred; -webkit-font-smoothing: antialiased; font-size: 1em;   }",
+        dynamicStyles: "{  }",
+        usedIn: [{ usage: "<Button>test</Button>", props: "" }],
+      },
+    ]
+    const result = convertCSStoTailwind(input)
+
+    expect(result).toEqual(
+      expect.arrayContaining([
+        {
+          componentName: "Button",
+          tailwindTag: [
+            {
+              tag: "<button className='bg-[white] text-[palevioletred] antialiased text-[1em]' ></button>",
+              usage: "<Button>test</Button>",
+              props: "",
+            },
+          ],
+        },
+      ])
+    )
+  })
+
+  it("should convert shorthand CSS properties (i.e. padding: 1px 0 3px 5px) to TailwindCSS", () => {
+    const input = [
+      {
+        componentName: "Button",
+        tagName: "button",
+        staticStyles: "{  padding: 1px 0 3px 5px   }",
+        dynamicStyles: "{  }",
+        usedIn: [{ usage: "<Button>test</Button>", props: "" }],
+      },
+    ]
+    const result = convertCSStoTailwind(input)
+
+    expect(result).toEqual(
+      expect.arrayContaining([
+        {
+          componentName: "Button",
+          tailwindTag: [
+            {
+              tag: "<button className='pt-[1px] pr-[0] pb-[3px] pl-[5px]' ></button>",
+              usage: "<Button>test</Button>",
+              props: "",
+            },
+          ],
+        },
+      ])
+    )
+  })
+
+  it("should convert CSS properties with a decimal to TailwindCSS", () => {
+    const input = [
+      {
+        componentName: "Button",
+        tagName: "button",
+        staticStyles: "{  width: 50.5%; height: 50.4px;   }",
+        dynamicStyles: "{  }",
+        usedIn: [{ usage: "<Button>test</Button>", props: "" }],
+      },
+    ]
+    const result = convertCSStoTailwind(input)
+
+    expect(result).toEqual(
+      expect.arrayContaining([
+        {
+          componentName: "Button",
+          tailwindTag: [
+            {
+              tag: "<button className='w-[50.5%] h-[50.4px]' ></button>",
+              usage: "<Button>test</Button>",
+              props: "",
+            },
+          ],
+        },
+      ])
+    )
+  })
+
+  it("should convert CSS input with dynamic properties", () => {
+    const input = [
+      {
+        componentName: "Button",
+        tagName: "button",
+        staticStyles: "{  width: 50.5%; height: 50.4px;   }",
+        dynamicStyles: "{ color: customColor; }",
+        usedIn: [{ usage: "<Button>test</Button>", props: "" }],
+      },
+    ]
+    const result = convertCSStoTailwind(input)
+
+    expect(result).toEqual(
+      expect.arrayContaining([
+        {
+          componentName: "Button",
+          tailwindTag: [
+            {
+              tag: "<button className='w-[50.5%] h-[50.4px]' style={{color: customColor;}} ></button>",
+              usage: "<Button>test</Button>",
+              props: "",
+            },
+          ],
+        },
+      ])
     )
   })
 })

@@ -8,9 +8,19 @@ export const defaultTranslatorConfig = {
 }
 
 export const convertCSStoTailwind = (
-  components: Array<{ name: string; staticStyles: string; dynamicStyles: string }>,
+  components: Array<{
+    componentName: string
+    tagName: string
+    staticStyles: string
+    dynamicStyles: string
+    usedIn: Array<{ usage: any; props: any }>
+    children?: Array<any>
+  }>,
   config: TranslatorConfig = defaultTranslatorConfig
-): string => {
+): Array<{
+  componentName: string
+  tailwindTag: Array<{ tag: string; usage: any; props: any }>
+}> => {
   const handleNestedStyles = (parsedCode, config: TranslatorConfig, prefix = "") => {
     let resultVal = ""
 
@@ -28,7 +38,30 @@ export const convertCSStoTailwind = (
     return resultVal
   }
 
-  let output = ""
+  const formatProps = (props: any): string => {
+    return Object.entries(props)
+      .filter(([key]) => key !== "children")
+      .map(([key, value]) => {
+        if (typeof value === "string" && value.startsWith("() => {")) {
+          return `${key}={${value}}`
+        } else if (typeof value === "string") {
+          const hasSpecialCharacter = /[!@#$%^&*(),.?":|<>]/g.test(value)
+          if (hasSpecialCharacter) {
+            return `${key}={\`${value}\`}`
+          } else {
+            return `${key}="${value}"`
+          }
+        } else {
+          return `${key}={${JSON.stringify(value)}}`
+        }
+      })
+      .join(" ")
+  }
+
+  const output: Array<{
+    componentName: string
+    tailwindTag: Array<{ tag: string; usage: any; props: any }>
+  }> = []
 
   for (const component of components) {
     const parsedCodes = parsingCode(component.staticStyles)
@@ -45,11 +78,30 @@ export const convertCSStoTailwind = (
     dynamicStylesFormatted = dynamicStylesFormatted.replace(/,(\s*})/g, "$1")
     dynamicStylesFormatted = dynamicStylesFormatted.replace(/^{\s*/, "").replace(/\s*}$/, "")
 
-    if (dynamicStylesFormatted.trim() !== "") {
-      output += `<${component.name} className='${tailwindStaticStyles}' style={{${dynamicStylesFormatted}}}></${component.name}>\n\n`
-    } else {
-      output += `<${component.name} className='${tailwindStaticStyles}'></${component.name}>\n\n`
-    }
+    const tailwindTags = component.usedIn.map((usage) => {
+      const propsFormatted = formatProps(usage.props)
+
+      let children = ""
+      if (usage.props.children) {
+        children = usage.props.children.join("")
+      }
+
+      const tag =
+        dynamicStylesFormatted.trim() !== ""
+          ? `<${component.tagName} className='${tailwindStaticStyles}' style={{${dynamicStylesFormatted}}} ${propsFormatted}>${children}</${component.tagName}>`
+          : `<${component.tagName} className='${tailwindStaticStyles}' ${propsFormatted}>${children}</${component.tagName}>`
+
+      return {
+        tag,
+        usage: usage.usage,
+        props: usage.props,
+      }
+    })
+
+    output.push({
+      componentName: component.componentName,
+      tailwindTag: tailwindTags,
+    })
   }
 
   return output

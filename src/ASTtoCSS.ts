@@ -1,7 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as t from "@babel/types"
+import { CodeGenerator } from "@babel/generator"
 
-export function convertASTtoCSS(ast: t.File): Array<{ name: string; staticStyles: string; dynamicStyles: string }> {
+export function convertASTtoCSS(ast: t.File): Array<{
+  componentName: string
+  tagName: string
+  staticStyles: string
+  dynamicStyles: string
+  usedIn: Array<{ usage: string; props: any }>
+}> {
   if (!ast) {
     throw new Error("Provided input is empty!")
   }
@@ -25,9 +32,11 @@ export function convertASTtoCSS(ast: t.File): Array<{ name: string; staticStyles
 
   function traverseComponent(declaration) {
     const component = {
-      name: "div",
+      componentName: (declaration.id as t.Identifier).name,
+      tagName: "div",
       staticStyles: "",
       dynamicStyles: "",
+      usedIn: [],
     }
 
     traverseAST(declaration, component)
@@ -40,12 +49,27 @@ export function convertASTtoCSS(ast: t.File): Array<{ name: string; staticStyles
 
   const styledComponents = []
 
-  function traverseAST(node: t.Node, component: { name: string; staticStyles: string; dynamicStyles: string }) {
+  function traverseAST(
+    node: t.Node,
+    component: {
+      componentName: string
+      tagName: string
+      staticStyles: string
+      dynamicStyles: string
+      usedIn: Array<{ usage: string; props: any }>
+    }
+  ) {
+    for (const key in node) {
+      if (node[key] && typeof node[key] === "object") {
+        traverseAST(node[key] as t.Node, component)
+      }
+    }
+
     if (t.isTaggedTemplateExpression(node)) {
       const cssRules = node.quasi.quasis[0].value.raw.split("\n")
 
       if (t.isMemberExpression(node.tag)) {
-        component.name = (node.tag.property as t.Identifier).name
+        component.tagName = (node.tag.property as t.Identifier).name
       }
 
       cssRules.forEach((rule) => {
@@ -64,10 +88,60 @@ export function convertASTtoCSS(ast: t.File): Array<{ name: string; staticStyles
         }
       })
     }
+  }
 
+  function findComponentUsage(
+    node: t.Node,
+    component: {
+      componentName: string
+      tagName: string
+      staticStyles: string
+      dynamicStyles: string
+      usedIn: Array<{ usage: string; props: any }>
+    }
+  ) {
     for (const key in node) {
       if (node[key] && typeof node[key] === "object") {
-        traverseAST(node[key] as t.Node, component)
+        findComponentUsage(node[key] as t.Node, component)
+      }
+    }
+
+    if (t.isJSXElement(node) && t.isJSXIdentifier(node.openingElement.name)) {
+      const jsxName = node.openingElement.name.name
+
+      if (jsxName === component.componentName) {
+        const props = {}
+        const attributes = node.openingElement.attributes
+        attributes.forEach((attr) => {
+          if (t.isJSXAttribute(attr)) {
+            if (t.isStringLiteral(attr.value)) {
+              props[(attr.name as any).name] = attr.value.value
+            } else if (t.isJSXExpressionContainer(attr.value) && t.isStringLiteral(attr.value.expression)) {
+              props[(attr.name as any).name] = attr.value.expression.value
+            } else if (t.isJSXExpressionContainer(attr.value)) {
+              props[(attr.name as any).name] = new CodeGenerator(attr.value.expression).generate().code
+            }
+          }
+        })
+
+        // Handle children
+        if (node.children && node.children.length > 0) {
+          props["children"] = node.children
+            .map((childNode) => {
+              if (t.isJSXText(childNode)) {
+                return childNode.value.trim()
+              } else {
+                // For non-text children (like other JSX elements), generate the code representation
+                return new CodeGenerator(childNode).generate().code
+              }
+            })
+            .filter(Boolean) // Filter out any empty strings (caused by whitespace or newline characters)
+        }
+
+        component.usedIn.push({
+          usage: new CodeGenerator(node).generate().code,
+          props: props,
+        })
       }
     }
   }
@@ -75,10 +149,16 @@ export function convertASTtoCSS(ast: t.File): Array<{ name: string; staticStyles
   for (const node of ast.program.body) {
     if (t.isVariableDeclaration(node) && node.declarations) {
       for (const declaration of node.declarations) {
-        const component = traverseComponent(declaration)
-        styledComponents.push(component)
+        if (t.isVariableDeclarator(declaration) && t.isIdentifier(declaration.id)) {
+          const component = traverseComponent(declaration)
+          styledComponents.push(component)
+        }
       }
     }
+  }
+
+  for (const component of styledComponents) {
+    findComponentUsage(ast, component)
   }
 
   return styledComponents
