@@ -7,10 +7,10 @@
   resolved "https://registry.yarnpkg.com/@aashutoshrathi/word-wrap/-/word-wrap-1.2.6.tgz#bd9154aec9983f77b3a034ecaa015c2e4201f6cf"
   integrity sha512-1Yjs2SvM8TflER/OD3cOjhWWOZb58A2t7wpE2S9XfBYTiIl+XFhQG2bjy4Pu1I+EAlCNUzRDYDdFwFYUKvXcIA==
 
-"@alcalzone/ansi-tokenize@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@alcalzone/ansi-tokenize/-/ansi-tokenize-0.1.1.tgz#aa0d88ff15bae958977f0dc636ec2a9563921195"
-  integrity sha512-0ePcNHsuFOdSZRTkcp6rD/EF6Ls4f2OzBBwXltsk8hHadr6PPKiL/obFrMwoff+twCTdNuvSKywGGPLD2OXV6A==
+"@alcalzone/ansi-tokenize@^0.1.2":
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@alcalzone/ansi-tokenize/-/ansi-tokenize-0.1.2.tgz#4bbc953eebc94005ef133c1df966f4ffb3f9fee8"
+  integrity sha512-/9Wcb0XV6jhvbn0UsL0CPBYKRWjSN0Er2vrrhFDNy0IMIvZ7pWBLwOZbFKTlyYCr1Q+UBXb1hWM4czT2FOfT+A==
   dependencies:
     ansi-styles "^6.2.1"
     is-fullwidth-code-point "^4.0.0"
@@ -1481,11 +1481,11 @@ inherits@2:
   integrity sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==
 
 ink@^4.3.0:
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/ink/-/ink-4.3.0.tgz#83e739bec9af158e2092b6978bfb02a047f2b085"
-  integrity sha512-c+/4o5/VdAy3jGU7Q+HB/tU0smIFEcpOJbP53WVL+pjcy1uBpPg0OmC7QVsTrAFwwIlGBxi9VOde6FiW83j1YA==
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/ink/-/ink-4.3.1.tgz#1eb3f8b4da9a51b3082b8b102dc2e79890e07016"
+  integrity sha512-XlH5AiZRLIC4cF+eMgZLsB/feHCDT7lUtHXK4pe8ULGrC6mNosrYidzJr8CRY0P+hK7UmZ1rLO+ufdox53+NQg==
   dependencies:
-    "@alcalzone/ansi-tokenize" "^0.1.1"
+    "@alcalzone/ansi-tokenize" "^0.1.2"
     ansi-escapes "^6.0.0"
     auto-bind "^5.0.1"
     chalk "^5.2.0"
@@ -2321,9 +2321,9 @@ ts-api-utils@^1.0.1:
   integrity sha512-lC/RGlPmwdrIBFTX59wwNzqh7aR2otPNPR/5brHZm/XKFYKsfqxihXUe9pU3JI+3vGkl+vyCoNNnPhJn3aLK1A==
 
 tslib@^2.0.3:
-  version "2.6.0"
-  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.6.0.tgz#b295854684dbda164e181d259a22cd779dcd7bc3"
-  integrity sha512-7At1WUettjcSRHXCyYtTselblcHl9PJFFVKiCAy/bY97+BPZXSQ2wbq0P9s8tK2G7dFQfNnlJnPAiArVBVBsfA==
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.6.1.tgz#fd8c9a0ff42590b25703c0acb3de3d3f4ede0410"
+  integrity sha512-t0hLfiEKfMUoqhG+U1oid7Pva4bbDPHYfJNiB7BiIjRkj1pyC++4N3huJfqY6aRH6VTB0rvtzQwjM4K6qpfOig==
 
 type-check@^0.4.0, type-check@~0.4.0:
   version "0.4.0"
