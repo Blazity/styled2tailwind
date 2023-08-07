@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
-import { convertASTtoCSS } from "../src/ASTtoCSS"
-import { regularAST, multipleDeclarationsAST, nestedTemplateAST, exportedComponentsAST } from "../__stubs__/asts"
+import { convertASTtoCSS } from "../src/ast-to-css"
+import { regularAST, multipleDeclarationsAST, nestedTemplateAST, exportedComponentsAST } from "./__stubs__/asts"
 
 describe("#convertASTtoCSS", () => {
   it("should generate valid CSS from correct AST input", () => {

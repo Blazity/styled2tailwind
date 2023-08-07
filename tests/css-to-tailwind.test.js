@@ -11,8 +11,8 @@ import {
   getPropertyPipeValue,
   getFallbackPropertyValue,
   applyPrefixesAndImportant,
-} from "../src/CSStoTailwind/converter-utils"
-import { convertCSStoTailwind } from "../src/CSStoTailwind/converter"
+} from "../src/css-to-tailwind/converter-utils"
+import { convertCSStoTailwind } from "../src/css-to-tailwind/converter"
 
 describe("#convertToTailwind", () => {
   it("should convert CSS input to Tailwind", () => {

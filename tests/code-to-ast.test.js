@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
-import { convertCodeToAST } from "../src/codeToAST"
-import { findPropertyByValue } from "./test-utils"
+import { convertCodeToAST } from "../src/code-to-ast"
+import { findPropertyByValue } from "./__utils__/test-utils"
 
 describe("#convertCodeToAST", () => {
   it("should contain a valid TemplateElement type", () => {
