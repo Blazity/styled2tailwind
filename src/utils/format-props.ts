@@ -1,4 +1,4 @@
-export const formatProps = (props: Record<string, string>): string => {
+export function formatProps(props: Record<string, string>) {
   return Object.entries(props)
     .filter(([key]) => key !== "children")
     .map(([key, value]) => {

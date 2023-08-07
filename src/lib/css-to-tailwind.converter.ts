@@ -1,6 +1,6 @@
 import { formatProps } from "../utils/format-props.js"
 import { TranslatorConfig, handleNestedStyles, parsingCode } from "./css-to-tailwind.utils.js"
-import { Component, ComponentsProps, ConvertReturnType } from "./types.js"
+import { Component, ComponentsProps, ConvertReturnType } from "../types.js"
 
 export const DEFAULT_TRASNLATOR_CONFIG = {
   prefix: "",

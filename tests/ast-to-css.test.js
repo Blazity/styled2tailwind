@@ -113,7 +113,7 @@ describe("#convertASTtoCSS", () => {
           dynamicStyles: "{  }",
           usedIn: [
             {
-              usage:
+              styledMarkup:
                 "<ItemsList>\n        {navItems.map((navItem, index) => <NavItem key={index} isActive={activeTitle === index} id={`navItem.href-navItem`} onClick={() => handleScrollToElement(navItem.href)}>\n            {navItem.title}\n          </NavItem>)}\n      </ItemsList>",
               props: {
                 children: [
@@ -132,7 +132,7 @@ describe("#convertASTtoCSS", () => {
             "{ background: rgba(255, 255, 255, 0.9), backdrop-filter: blur(16px), width: ({ progress ) => progress}, background: ({ theme ) => theme.colors.primary} }",
           usedIn: [
             {
-              usage:
+              styledMarkup:
                 "<StyledNavigationBar progress={progress}>\n      <ItemsList>\n        {navItems.map((navItem, index) => <NavItem key={index} isActive={activeTitle === index} id={`navItem.href-navItem`} onClick={() => handleScrollToElement(navItem.href)}>\n            {navItem.title}\n          </NavItem>)}\n      </ItemsList>\n    </StyledNavigationBar>",
               props: {
                 progress: "progress",
@@ -152,7 +152,7 @@ describe("#convertASTtoCSS", () => {
             "{ color: (props) => (props.isActive ? props.theme.colors.primary, background: ({ theme ) => theme.colors.primary}, transform: translateY(-50%) }",
           usedIn: [
             {
-              usage:
+              styledMarkup:
                 "<NavItem key={index} isActive={activeTitle === index} id={`navItem.href-navItem`} onClick={() => handleScrollToElement(navItem.href)}>\n            {navItem.title}\n          </NavItem>",
               props: {
                 key: "index",

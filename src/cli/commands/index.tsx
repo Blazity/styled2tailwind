@@ -3,7 +3,7 @@ import { Text } from "ink"
 import { Spinner, StatusMessage } from "@inkjs/ui"
 import zod from "zod"
 import fs from "fs"
-import { convertCodeToAST } from "../../code-to-ast.js"
+import { generateAst } from "../../code-to-ast.js"
 import { convertASTtoCSS } from "../../ast-to-css.js"
 import { convertCSStoTailwind } from "../../lib/css-to-tailwind.converter.js"
 import _ from "lodash"
@@ -19,7 +19,7 @@ export const options = zod.object({
     .default(true),
   replace: zod
     .boolean()
-    .describe(option({ description: "Whether should include conflicts or not" }))
+    .describe(option({ description: "Whether should replace original styled components markup" }))
     .default(true),
 })
 
@@ -72,24 +72,26 @@ export default function Index({ args, options }: Props) {
         )
         setFilesToConvert((prev) => ({ ...prev, [file]: { ...prev[file], isConverting: true } }))
 
-        const ast = convertCodeToAST(testFileContent)
+        const ast = generateAst(testFileContent)
         const styledComponents = convertASTtoCSS(ast)
         const tailwind = convertCSStoTailwind(styledComponents)
 
         const tailwindOutput = []
 
-        tailwind.forEach(({ tailwindTag, componentName }) => {
-          tailwindTag.forEach(({ tag, usage }) => {
-            tailwindOutput.push(tag)
+        tailwind.forEach(({ components, componentName }) => {
+          components.forEach(({ tailwindMarkup, styledMarkup }) => {
+            tailwindOutput.push(tailwindMarkup)
             if (replace) {
               fileContent = fileContent.replace(
-                normalizeString(usage),
-                conflicts ? `\n<<<<<<< HEAD\n${usage}\n=======\n${tag}\n>>>>>>> Tailwind\n` : tag
+                normalizeString(styledMarkup),
+                conflicts
+                  ? `\n<<<<<<< HEAD\n${styledMarkup}\n=======\n${tailwindMarkup}\n>>>>>>> Tailwind\n`
+                  : tailwindMarkup
               )
               return
             }
 
-            fileContent += `\n ${componentName}:\n` + tag + "\n"
+            fileContent += `\n ${componentName}:\n` + tailwindMarkup + "\n"
           })
         })
 
