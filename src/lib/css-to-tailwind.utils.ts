@@ -1,3 +1,5 @@
+// Original source: https://github.com/hymhub/css-to-tailwind
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface CustomTheme extends Record<string, undefined | Record<string, string>> {
   media?: Record<string, string>
