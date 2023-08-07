@@ -1,7 +1,5 @@
 /* eslint-disable no-prototype-builtins */
 import { parse, ParserOptions } from "@babel/parser"
-import { traverse } from "@babel/core"
-import { NodePath } from "@babel/traverse"
 import * as t from "@babel/types"
 
 export function convertCodeToAST(input: string) {

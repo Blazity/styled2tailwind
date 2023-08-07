@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "bin": {
-    "styled2tailwind": "dist/cli.js"
+    "styled2tailwind": "dist/cli/index.js"
   },
   "scripts": {
     "build": "tsc",
