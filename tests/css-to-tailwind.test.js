@@ -11,8 +11,8 @@ import {
   getPropertyPipeValue,
   getFallbackPropertyValue,
   applyPrefixesAndImportant,
-} from "../src/css-to-tailwind/converter-utils"
-import { convertCSStoTailwind } from "../src/css-to-tailwind/converter"
+} from "../src/lib/css-to-tailwind.utils"
+import { convertCSStoTailwind } from "../src/lib/css-to-tailwind.converter"
 
 describe("#convertToTailwind", () => {
   it("should convert CSS input to Tailwind", () => {
@@ -23,7 +23,7 @@ describe("#convertToTailwind", () => {
         staticStyles:
           "{  background: white; color: palevioletred; font-size: 1em; &:hover { background: palevioletred; color: white; }   }",
         dynamicStyles: "{  }",
-        usedIn: [{ usage: "<Button>test</Button>", props: "" }],
+        usedIn: [{ styledMarkup: "<Button>test</Button>", props: "" }],
       },
     ]
     const result = convertCSStoTailwind(input)
@@ -32,10 +32,10 @@ describe("#convertToTailwind", () => {
       expect.arrayContaining([
         {
           componentName: "Button",
-          tailwindTag: [
+          components: [
             {
-              tag: "<button className='bg-[palevioletred] text-[white]' ></button>",
-              usage: "<Button>test</Button>",
+              tailwindMarkup: "<button className='bg-[palevioletred] text-[white]' ></button>",
+              styledMarkup: "<Button>test</Button>",
               props: "",
             },
           ],
@@ -52,7 +52,7 @@ describe("#convertToTailwind", () => {
         staticStyles:
           "{  background: white; color: palevioletred; non-existent: property; font-size: 1em; &:hover { background: palevioletred; color: white; }   }",
         dynamicStyles: "{  }",
-        usedIn: [{ usage: "<Button>test</Button>", props: "" }],
+        usedIn: [{ styledMarkup: "<Button>test</Button>", props: "" }],
       },
     ]
     const result = convertCSStoTailwind(input)
@@ -61,10 +61,10 @@ describe("#convertToTailwind", () => {
       expect.arrayContaining([
         {
           componentName: "Button",
-          tailwindTag: [
+          components: [
             {
-              tag: "<button className='bg-[palevioletred] text-[white]' ></button>",
-              usage: "<Button>test</Button>",
+              tailwindMarkup: "<button className='bg-[palevioletred] text-[white]' ></button>",
+              styledMarkup: "<Button>test</Button>",
               props: "",
             },
           ],
@@ -81,7 +81,7 @@ describe("#convertToTailwind", () => {
         staticStyles:
           "{  background: white; color: palevioletred; -webkit-font-smoothing: antialiased; font-size: 1em;   }",
         dynamicStyles: "{  }",
-        usedIn: [{ usage: "<Button>test</Button>", props: "" }],
+        usedIn: [{ styledMarkup: "<Button>test</Button>", props: "" }],
       },
     ]
     const result = convertCSStoTailwind(input)
@@ -90,10 +90,10 @@ describe("#convertToTailwind", () => {
       expect.arrayContaining([
         {
           componentName: "Button",
-          tailwindTag: [
+          components: [
             {
-              tag: "<button className='bg-[white] text-[palevioletred] antialiased text-[1em]' ></button>",
-              usage: "<Button>test</Button>",
+              tailwindMarkup: "<button className='bg-[white] text-[palevioletred] antialiased text-[1em]' ></button>",
+              styledMarkup: "<Button>test</Button>",
               props: "",
             },
           ],
@@ -109,7 +109,7 @@ describe("#convertToTailwind", () => {
         tagName: "button",
         staticStyles: "{  padding: 1px 0 3px 5px   }",
         dynamicStyles: "{  }",
-        usedIn: [{ usage: "<Button>test</Button>", props: "" }],
+        usedIn: [{ styledMarkup: "<Button>test</Button>", props: "" }],
       },
     ]
     const result = convertCSStoTailwind(input)
@@ -118,10 +118,10 @@ describe("#convertToTailwind", () => {
       expect.arrayContaining([
         {
           componentName: "Button",
-          tailwindTag: [
+          components: [
             {
-              tag: "<button className='pt-[1px] pr-[0] pb-[3px] pl-[5px]' ></button>",
-              usage: "<Button>test</Button>",
+              tailwindMarkup: "<button className='pt-[1px] pr-[0] pb-[3px] pl-[5px]' ></button>",
+              styledMarkup: "<Button>test</Button>",
               props: "",
             },
           ],
@@ -137,7 +137,7 @@ describe("#convertToTailwind", () => {
         tagName: "button",
         staticStyles: "{  width: 50.5%; height: 50.4px;   }",
         dynamicStyles: "{  }",
-        usedIn: [{ usage: "<Button>test</Button>", props: "" }],
+        usedIn: [{ styledMarkup: "<Button>test</Button>", props: "" }],
       },
     ]
     const result = convertCSStoTailwind(input)
@@ -146,10 +146,10 @@ describe("#convertToTailwind", () => {
       expect.arrayContaining([
         {
           componentName: "Button",
-          tailwindTag: [
+          components: [
             {
-              tag: "<button className='w-[50.5%] h-[50.4px]' ></button>",
-              usage: "<Button>test</Button>",
+              tailwindMarkup: "<button className='w-[50.5%] h-[50.4px]' ></button>",
+              styledMarkup: "<Button>test</Button>",
               props: "",
             },
           ],
@@ -165,7 +165,7 @@ describe("#convertToTailwind", () => {
         tagName: "button",
         staticStyles: "{  width: 50.5%; height: 50.4px;   }",
         dynamicStyles: "{ color: customColor; }",
-        usedIn: [{ usage: "<Button>test</Button>", props: "" }],
+        usedIn: [{ styledMarkup: "<Button>test</Button>", props: "" }],
       },
     ]
     const result = convertCSStoTailwind(input)
@@ -174,10 +174,10 @@ describe("#convertToTailwind", () => {
       expect.arrayContaining([
         {
           componentName: "Button",
-          tailwindTag: [
+          components: [
             {
-              tag: "<button className='w-[50.5%] h-[50.4px]' style={{color: customColor;}} ></button>",
-              usage: "<Button>test</Button>",
+              tailwindMarkup: "<button className='w-[50.5%] h-[50.4px]' style={{color: customColor;}} ></button>",
+              styledMarkup: "<Button>test</Button>",
               props: "",
             },
           ],

@@ -496,7 +496,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
       unset: "[all:unset]",
     },
   ],
-  ["animation", (val) => ({ none: "animate-none" }[val] ?? `animate-[${getCustomVal(val)}]`)],
+  ["animation", (val) => ({ none: "animate-none" })[val] ?? `animate-[${getCustomVal(val)}]`],
   ["animation-delay", (val) => `[animation-delay:${getCustomVal(val)}]`],
   ["animation-direction", (val) => `[animation-direction:${getCustomVal(val)}]`],
   ["animation-duration", (val) => `[animation-duration:${getCustomVal(val)}]`],
@@ -505,7 +505,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
   ["animation-name", (val) => `[animation-name:${getCustomVal(val)}]`],
   ["animation-play-state", (val) => `[animation-play-state:${getCustomVal(val)}]`],
   ["animation-timing-function", (val) => `[animation-timing-function:${getCustomVal(val)}]`],
-  ["appearance", (val) => ({ none: "appearance-none" }[val] ?? `[appearance:${getCustomVal(val)}]`)],
+  ["appearance", (val) => ({ none: "appearance-none" })[val] ?? `[appearance:${getCustomVal(val)}]`],
   ["aspect-ratio", (val) => `[aspect-ratio:${getCustomVal(val)}]`],
   [
     "backdrop-filter",
@@ -657,10 +657,10 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
   [
     "background-color",
     (val) =>
-      ({ transparent: "bg-transparent", currentColor: "bg-current", currentcolor: "bg-current" }[val] ??
-      (isColor(val) ? `bg-[${getCustomVal(val)}]` : "")),
+      ({ transparent: "bg-transparent", currentColor: "bg-current", currentcolor: "bg-current" })[val] ??
+      (isColor(val) ? `bg-[${getCustomVal(val)}]` : ""),
   ],
-  ["background-image", (val) => ({ none: "bg-none" }[val] ?? `bg-[${getCustomVal(val)}]`)],
+  ["background-image", (val) => ({ none: "bg-none" })[val] ?? `bg-[${getCustomVal(val)}]`],
   [
     "background-origin",
     {
@@ -682,7 +682,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
         "right bottom": "bg-right-bottom",
         "right top": "bg-right-top",
         top: "bg-top",
-      }[val] ?? `bg-[${getCustomVal(val)}]`),
+      })[val] ?? `bg-[${getCustomVal(val)}]`,
   ],
   [
     "background-repeat",
@@ -702,7 +702,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
         auto: "bg-auto",
         cover: "bg-cover",
         contain: "bg-contain",
-      }[val] ?? `[background-size:${getCustomVal(val)}]`),
+      })[val] ?? `[background-size:${getCustomVal(val)}]`,
   ],
   [
     "border",
@@ -737,24 +737,24 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
   [
     "border-bottom-left-radius",
     (val) =>
-      ({ "0": "rounded-bl-none", "0px": "rounded-bl-none" }[val] ??
+      ({ "0": "rounded-bl-none", "0px": "rounded-bl-none" })[val] ??
       (isUnit(val)
         ? `rounded-bl${((useAllDefaultValues && getBorderRadiusDefaultVal(val)) || `-[${getCustomVal(val)}]`).replace(
             /null$/,
             ""
           )}`
-        : "")),
+        : ""),
   ],
   [
     "border-bottom-right-radius",
     (val) =>
-      ({ "0": "rounded-br-none", "0px": "rounded-br-none" }[val] ??
+      ({ "0": "rounded-br-none", "0px": "rounded-br-none" })[val] ??
       (isUnit(val)
         ? `rounded-br${((useAllDefaultValues && getBorderRadiusDefaultVal(val)) || `-[${getCustomVal(val)}]`).replace(
             /null$/,
             ""
           )}`
-        : "")),
+        : ""),
   ],
   [
     "border-bottom-style",
@@ -775,7 +775,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
         transparent: "border-transparent",
         currentColor: "border-current",
         currentcolor: "border-current",
-      }[val] ?? (isColor(val) ? `border-[${getCustomVal(val)}]` : "")),
+      })[val] ?? (isColor(val) ? `border-[${getCustomVal(val)}]` : ""),
   ],
   ["border-image", (val) => `[border-image:${getCustomVal(val)}]`],
   ["border-image-outset", (val) => `[border-image-outset:${getCustomVal(val)}]`],
@@ -867,24 +867,24 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
   [
     "border-top-left-radius",
     (val) =>
-      ({ "0": "rounded-tl-none", "0px": "rounded-tl-none" }[val] ??
+      ({ "0": "rounded-tl-none", "0px": "rounded-tl-none" })[val] ??
       (isUnit(val)
         ? `rounded-tl${((useAllDefaultValues && getBorderRadiusDefaultVal(val)) || `-[${getCustomVal(val)}]`).replace(
             /null$/,
             ""
           )}`
-        : "")),
+        : ""),
   ],
   [
     "border-top-right-radius",
     (val) =>
-      ({ "0": "rounded-tr-none", "0px": "rounded-tr-none" }[val] ??
+      ({ "0": "rounded-tr-none", "0px": "rounded-tr-none" })[val] ??
       (isUnit(val)
         ? `rounded-tr${((useAllDefaultValues && getBorderRadiusDefaultVal(val)) || `-[${getCustomVal(val)}]`).replace(
             /null$/,
             ""
           )}`
-        : "")),
+        : ""),
   ],
   [
     "border-top-style",
@@ -991,8 +991,8 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
   [
     "color",
     (val) =>
-      ({ transparent: "text-transparent", currentColor: "text-current", currentcolor: "text-current" }[val] ??
-      (isColor(val) ? `text-[${getCustomVal(val)}]` : "")),
+      ({ transparent: "text-transparent", currentColor: "text-current", currentcolor: "text-current" })[val] ??
+      (isColor(val) ? `text-[${getCustomVal(val)}]` : ""),
   ],
   ["color-scheme", (val) => `[color-scheme:${getCustomVal(val)}]`],
   ["column-count", (val) => `[column-count:${getCustomVal(val)}]`],
@@ -1004,7 +1004,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
       initial: "[column-fill:initial]",
     },
   ],
-  ["column-gap", (val) => ({ "0": "gap-x-0" }[val] ?? (isUnit(val) ? `gap-x-[${val}]` : ""))],
+  ["column-gap", (val) => ({ "0": "gap-x-0" })[val] ?? (isUnit(val) ? `gap-x-[${val}]` : "")],
   ["column-rule", (val) => `[column-rule:${getCustomVal(val)}]`],
   ["column-rule-color", (val) => (isColor(val) ? `[column-rule-color:${getCustomVal(val)}]` : "")],
   [
@@ -1093,8 +1093,8 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
   [
     "fill",
     (val) =>
-      ({ currentColor: "fill-current", currentcolor: "fill-current" }[val] ??
-      (isColor(val) ? `fill-[${getCustomVal(val)}]` : "")),
+      ({ currentColor: "fill-current", currentcolor: "fill-current" })[val] ??
+      (isColor(val) ? `fill-[${getCustomVal(val)}]` : ""),
   ],
   [
     "filter",
@@ -1153,8 +1153,8 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
   [
     "flex",
     (val) =>
-      ({ "1 1 0%": "flex-1", "1 1 auto": "flex-auto", "0 1 auto": "flex-initial", none: "flex-none" }[val] ??
-      `flex-[${getCustomVal(val)}]`),
+      ({ "1 1 0%": "flex-1", "1 1 auto": "flex-auto", "0 1 auto": "flex-initial", none: "flex-none" })[val] ??
+      `flex-[${getCustomVal(val)}]`,
   ],
   ["flex-basis", (val) => (isUnit(val) ? `[flex-basis:${val}]` : "")],
   [
@@ -1256,7 +1256,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
   ],
   ["font-variation-settings", (val) => `[font-variation-settings:${getCustomVal(val)}]`],
   ["font-weight", (val) => (isUnit(val) ? `font-[${val}]` : "")],
-  ["gap", (val) => ({ "0": "gap-0" }[val] ?? (isUnit(val) ? `gap-[${val}]` : ""))],
+  ["gap", (val) => ({ "0": "gap-0" })[val] ?? (isUnit(val) ? `gap-[${val}]` : "")],
   ["grid", (val) => `[grid:${getCustomVal(val)}]`],
   ["grid-area", (val) => `[grid-area:${getCustomVal(val)}]`],
   [
@@ -1267,7 +1267,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
         "min-content": "auto-cols-min",
         "max-content": "auto-cols-max",
         "minmax(0, 1fr)": "auto-cols-fr",
-      }[val] ?? `auto-cols-[${getCustomVal(val)}]`),
+      })[val] ?? `auto-cols-[${getCustomVal(val)}]`,
   ],
   [
     "grid-auto-flow",
@@ -1277,7 +1277,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
         column: "grid-flow-col",
         row_dense: "grid-flow-row-dense",
         column_dense: "grid-flow-col-dense",
-      }[getCustomVal(val)] ?? ""),
+      })[getCustomVal(val)] ?? "",
   ],
   [
     "grid-auto-rows",
@@ -1287,7 +1287,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
         "min-content": "auto-rows-min",
         "max-content": "auto-rows-max",
         "minmax(0, 1fr)": "auto-rows-fr",
-      }[val] ?? `auto-rows-[${getCustomVal(val)}]`),
+      })[val] ?? `auto-rows-[${getCustomVal(val)}]`,
   ],
   [
     "grid-column",
@@ -1307,7 +1307,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
         "span 11 / span 11": "col-span-11",
         "span 12 / span 12": "col-span-12",
         "1 / -1": "col-span-full",
-      }[val] ?? `col-[${getCustomVal(val)}]`),
+      })[val] ?? `col-[${getCustomVal(val)}]`,
   ],
   [
     "grid-column-end",
@@ -1327,9 +1327,9 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
         "12": "col-end-12",
         "13": "col-end-13",
         auto: "col-end-auto",
-      }[val] ?? `col-end-[${getCustomVal(val)}]`),
+      })[val] ?? `col-end-[${getCustomVal(val)}]`,
   ],
-  ["grid-column-gap", (val) => ({ "0": "gap-x-0" }[val] ?? (isUnit(val) ? `gap-x-[${val}]` : ""))],
+  ["grid-column-gap", (val) => ({ "0": "gap-x-0" })[val] ?? (isUnit(val) ? `gap-x-[${val}]` : "")],
   [
     "grid-column-start",
     (val) =>
@@ -1348,9 +1348,9 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
         "12": "col-start-12",
         "13": "col-start-13",
         auto: "col-start-auto",
-      }[val] ?? `col-start-[${getCustomVal(val)}]`),
+      })[val] ?? `col-start-[${getCustomVal(val)}]`,
   ],
-  ["grid-gap", (val) => ({ "0": "gap-0" }[val] ?? (isUnit(val) ? `gap-[${val}]` : ""))],
+  ["grid-gap", (val) => ({ "0": "gap-0" })[val] ?? (isUnit(val) ? `gap-[${val}]` : "")],
   [
     "grid-row",
     (val) =>
@@ -1363,7 +1363,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
         "span 5 / span 5": "row-span-5",
         "span 6 / span 6": "row-span-6",
         "1 / -1": "row-span-full",
-      }[val] ?? `row-[${getCustomVal(val)}]`),
+      })[val] ?? `row-[${getCustomVal(val)}]`,
   ],
   [
     "grid-row-end",
@@ -1377,9 +1377,9 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
         "6": "row-end-6",
         "7": "row-end-7",
         auto: "row-end-auto",
-      }[val] ?? `row-end-[${getCustomVal(val)}]`),
+      })[val] ?? `row-end-[${getCustomVal(val)}]`,
   ],
-  ["grid-row-gap", (val) => ({ "0": "gap-y-0" }[val] ?? (isUnit(val) ? `gap-y-[${val}]` : ""))],
+  ["grid-row-gap", (val) => ({ "0": "gap-y-0" })[val] ?? (isUnit(val) ? `gap-y-[${val}]` : "")],
   [
     "grid-row-start",
     (val) =>
@@ -1392,7 +1392,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
         "6": "row-start-6",
         "7": "row-start-7",
         auto: "row-start-auto",
-      }[val] ?? `row-start-[${getCustomVal(val)}]`),
+      })[val] ?? `row-start-[${getCustomVal(val)}]`,
   ],
   ["grid-rows", (val) => `[grid-rows:${getCustomVal(val)}]`],
   ["grid-template", (val) => `[grid-template:${getCustomVal(val)}]`],
@@ -1414,7 +1414,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
         "repeat(11,minmax(0,1fr))": "grid-cols-11",
         "repeat(12,minmax(0,1fr))": "grid-cols-12",
         none: "grid-cols-none",
-      }[getCustomVal(val).replace(/_/g, "")] ?? `grid-cols-[${getCustomVal(val)}]`),
+      })[getCustomVal(val).replace(/_/g, "")] ?? `grid-cols-[${getCustomVal(val)}]`,
   ],
   [
     "grid-template-rows",
@@ -1427,7 +1427,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
         "repeat(5,minmax(0,1fr))": "grid-rows-5",
         "repeat(6,minmax(0,1fr))": "grid-rows-6",
         none: "grid-rows-none",
-      }[getCustomVal(val).replace(/_/g, "")] ?? `grid-rows-[${getCustomVal(val)}]`),
+      })[getCustomVal(val).replace(/_/g, "")] ?? `grid-rows-[${getCustomVal(val)}]`,
   ],
   [
     "hanging-punctuation",
@@ -1502,7 +1502,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
         "0.025em": "tracking-wide",
         "0.05em": "tracking-wider",
         "0.1em": "tracking-widest",
-      }[val] ?? (isUnit(val) ? `tracking-[${val}]` : "")),
+      })[val] ?? (isUnit(val) ? `tracking-[${val}]` : ""),
   ],
   [
     "line-height",
@@ -1514,7 +1514,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
         "1.375": "leading-snug",
         "1.5": "leading-normal",
         "1.625": "leading-relaxed",
-      }[val] ?? (isUnit(val) ? `leading-[${val}]` : "")),
+      })[val] ?? (isUnit(val) ? `leading-[${val}]` : ""),
   ],
   ["list-style", (val) => `[list-style:${getCustomVal(val)}]`],
   ["list-style-image", (val) => `[list-style-image:${getCustomVal(val)}]`],
@@ -1524,7 +1524,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
       ({
         inside: "list-inside",
         outside: "list-outside",
-      }[val] ?? `[list-style-position:${getCustomVal(val)}]`),
+      })[val] ?? `[list-style-position:${getCustomVal(val)}]`,
   ],
   [
     "list-style-type",
@@ -1533,7 +1533,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
         none: "list-none",
         disc: "list-disc",
         decimal: "list-decimal",
-      }[val] ?? `list-[${getCustomVal(val)}]`),
+      })[val] ?? `list-[${getCustomVal(val)}]`,
   ],
   ["logical-height", (val) => (isUnit(val) ? `[logical-height:${val}]` : "")],
   ["logical-width", (val) => (isUnit(val) ? `[logical-width:${val}]` : "")],
@@ -1719,7 +1719,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
         right_bottom: "object-right-bottom",
         right_top: "object-right-top",
         top: "object-top",
-      }[getCustomVal(val)] ?? ""),
+      })[getCustomVal(val)] ?? "",
   ],
   [
     "opacity",
@@ -1740,7 +1740,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
         "0.8": "opacity-80",
         "0.9": "opacity-90",
         "0.95": "opacity-95",
-      }[val] ?? (isUnit(val) ? `opacity-[${val}]` : "")),
+      })[val] ?? (isUnit(val) ? `opacity-[${val}]` : ""),
   ],
   [
     "order",
@@ -1761,7 +1761,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
         "12": "order-12",
         "9999": "order-last",
         "-9999": "order-first",
-      }[val] ?? (isUnit(val) ? `order-[${val}]` : "")),
+      })[val] ?? (isUnit(val) ? `order-[${val}]` : ""),
   ],
   ["outline", (val) => `outline-[${getCustomVal(val)}]`],
   ["outline-color", (val) => (isColor(val) ? `outline-[${getCustomVal(val)}]` : "")],
@@ -1791,7 +1791,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
     },
   ],
   ["overflow-anchor", (val) => `[overflow-anchor:${getCustomVal(val)}]`],
-  ["overflow-wrap", (val) => ({ "break-word": "break-words" }[val] ?? `[overflow-wrap:${getCustomVal(val)}]`)],
+  ["overflow-wrap", (val) => ({ "break-word": "break-words" })[val] ?? `[overflow-wrap:${getCustomVal(val)}]`],
   [
     "overflow-x",
     {
@@ -1880,26 +1880,26 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
   [
     "padding-bottom",
     (val) =>
-      ({ "0": "pb-0", "0px": "pb-0" }[val] ??
-      (isUnit(val) ? `pb-${(useAllDefaultValues && getRemDefaultVal(val)) || `[${val}]`}` : "")),
+      ({ "0": "pb-0", "0px": "pb-0" })[val] ??
+      (isUnit(val) ? `pb-${(useAllDefaultValues && getRemDefaultVal(val)) || `[${val}]`}` : ""),
   ],
   [
     "padding-left",
     (val) =>
-      ({ "0": "pl-0", "0px": "pl-0" }[val] ??
-      (isUnit(val) ? `pl-${(useAllDefaultValues && getRemDefaultVal(val)) || `[${val}]`}` : "")),
+      ({ "0": "pl-0", "0px": "pl-0" })[val] ??
+      (isUnit(val) ? `pl-${(useAllDefaultValues && getRemDefaultVal(val)) || `[${val}]`}` : ""),
   ],
   [
     "padding-right",
     (val) =>
-      ({ "0": "pr-0", "0px": "pr-0" }[val] ??
-      (isUnit(val) ? `pr-${(useAllDefaultValues && getRemDefaultVal(val)) || `[${val}]`}` : "")),
+      ({ "0": "pr-0", "0px": "pr-0" })[val] ??
+      (isUnit(val) ? `pr-${(useAllDefaultValues && getRemDefaultVal(val)) || `[${val}]`}` : ""),
   ],
   [
     "padding-top",
     (val) =>
-      ({ "0": "pt-0", "0px": "pt-0" }[val] ??
-      (isUnit(val) ? `pt-${(useAllDefaultValues && getRemDefaultVal(val)) || `[${val}]`}` : "")),
+      ({ "0": "pt-0", "0px": "pt-0" })[val] ??
+      (isUnit(val) ? `pt-${(useAllDefaultValues && getRemDefaultVal(val)) || `[${val}]`}` : ""),
   ],
   [
     "page-break-after",
@@ -2015,7 +2015,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
     },
   ],
   ["rotation", (val) => `[rotation:${getCustomVal(val)}]`],
-  ["row-gap", (val) => ({ "0": "gap-y-0" }[val] ?? (isUnit(val) ? `gap-y-[${val}]` : ""))],
+  ["row-gap", (val) => ({ "0": "gap-y-0" })[val] ?? (isUnit(val) ? `gap-y-[${val}]` : "")],
   ["scroll-snap-align", (val) => `[scroll-snap-align:${getCustomVal(val)}]`],
   ["scroll-snap-stop", (val) => `[scroll-snap-stop:${getCustomVal(val)}]`],
   ["scroll-snap-type", (val) => `[scroll-snap-type:${getCustomVal(val)}]`],
@@ -2029,7 +2029,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
       ({
         currentColor: "stroke-current",
         currentcolor: "stroke-current",
-      }[val] ?? (isColor(val) ? `stroke-[${getCustomVal(val)}]` : "")),
+      })[val] ?? (isColor(val) ? `stroke-[${getCustomVal(val)}]` : ""),
   ],
   ["stroke-width", (val) => (isUnit(val) ? `stroke-[${val}]` : "")],
   ["tab-size", (val) => (isUnit(val) ? `[tab-size:${val}]` : "")],
@@ -2142,7 +2142,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
       ({
         ellipsis: "overflow-ellipsis",
         clip: "overflow-clip",
-      }[val] ?? `[text-overflow:${getCustomVal(val)}]`),
+      })[val] ?? `[text-overflow:${getCustomVal(val)}]`,
   ],
   ["text-shadow", (val) => `[text-shadow:${getCustomVal(val)}]`],
   [
@@ -2406,7 +2406,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
         bottom_left: "origin-bottom-left",
         left: "origin-left",
         top_left: "origin-top-left",
-      }[getCustomVal(val)] ?? `origin-[${getCustomVal(val)}]`),
+      })[getCustomVal(val)] ?? `origin-[${getCustomVal(val)}]`,
   ],
   [
     "transform-style",
@@ -2568,7 +2568,7 @@ const propertyMap: Map<string, Record<string, string> | ((val: string) => string
         "40": "z-40",
         "50": "z-50",
         auto: "z-auto",
-      }[val] ?? (typeof val === "number" ? `z-[${val}]` : "")),
+      })[val] ?? (typeof val === "number" ? `z-[${val}]` : ""),
   ],
 ])
 
@@ -3210,6 +3210,23 @@ const moreDefaultValuesMap: Record<string, Record<string, string>> = {
     "box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1)": "transition-shadow",
     "transform 150ms cubic-bezier(0.4, 0, 0.2, 1)": "transition-transform",
   },
+}
+
+export const handleNestedStyles = (parsedCode: CssCodeParse, config: TranslatorConfig, prefix = "") => {
+  let resultVal = ""
+
+  if (typeof parsedCode.cssCode === "string") {
+    const result = getResultCode(parsedCode, prefix, config)
+    if (result) {
+      resultVal += `${result.resultVal} `
+    }
+  } else if (Array.isArray(parsedCode.cssCode)) {
+    parsedCode.cssCode.forEach((nestedCode: CssCodeParse) => {
+      resultVal += handleNestedStyles(nestedCode, config, parsedCode.selectorName)
+    })
+  }
+
+  return resultVal
 }
 
 export const getResultCode = (it: CssCodeParse, prefix = "", config: TranslatorConfig) => {
