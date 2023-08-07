@@ -8,11 +8,24 @@ import { convertASTtoCSS } from "../ASTtoCSS.js"
 import { convertCSStoTailwind } from "../CSStoTailwind/converter.js"
 import _ from "lodash"
 import fg from "fast-glob"
+import { option } from "pastel"
 
 export const args = zod.tuple([zod.string()])
 
+export const options = zod.object({
+  conflicts: zod
+    .boolean()
+    .describe(option({ description: "Whether should include conflicts or not" }))
+    .default(true),
+  replace: zod
+    .boolean()
+    .describe(option({ description: "Whether should include conflicts or not" }))
+    .default(true),
+})
+
 type Props = {
   args: zod.infer<typeof args>
+  options: zod.infer<typeof options>
 }
 
 interface FileToConvert {
@@ -24,10 +37,11 @@ interface FileToConvert {
   error: string | null
 }
 
-export default function Index({ args }: Props) {
+export default function Index({ args, options }: Props) {
   const [filesToConvert, setFilesToConvert] = React.useState<Record<string, FileToConvert>>({})
 
   const filePattern = args[0]
+  const { conflicts, replace } = options
 
   React.useEffect(() => {
     function stripDollarCurlyBraces(input: string) {
@@ -64,13 +78,18 @@ export default function Index({ args }: Props) {
 
         const tailwindOutput = []
 
-        tailwind.forEach(({ tailwindTag }) => {
+        tailwind.forEach(({ tailwindTag, componentName }) => {
           tailwindTag.forEach(({ tag, usage }) => {
             tailwindOutput.push(tag)
-            fileContent = fileContent.replace(
-              normalizeString(usage),
-              `\n<<<<<<< HEAD\n${usage}\n=======\n${tag}\n>>>>>>> Tailwind\n`
-            )
+            if (replace) {
+              fileContent = fileContent.replace(
+                normalizeString(usage),
+                conflicts ? `\n<<<<<<< HEAD\n${usage}\n=======\n${tag}\n>>>>>>> Tailwind\n` : tag
+              )
+              return
+            }
+
+            fileContent += `\n ${componentName}:\n` + tag + "\n"
           })
         })
 
@@ -90,6 +109,8 @@ export default function Index({ args }: Props) {
             })),
           2000
         )
+
+        fs.writeFileSync(file, fileContent)
       } catch (e) {
         if (e instanceof Error) {
           setFilesToConvert((prev) => ({
@@ -113,7 +134,6 @@ export default function Index({ args }: Props) {
     }
   }, [])
 
-  // fs.writeFileSync(filePath, fileContent)
   return Object.entries(filesToConvert).map(([key, singleFile]) => {
     if (singleFile.isProcessingFile) {
       return <Spinner key={key} label="Processing input..." />
