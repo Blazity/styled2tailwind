@@ -1,9 +1,11 @@
 <div align="center">
   <h1>Styled2Tailwind 🌀</h1>
   <p>Transform your Styled-Components into TailwindCSS with this handy codemod.</p> 
-  <br />
 
-  <img src="https://github.com/Blazity/styled2tailwind/assets/28964599/b272bab9-15f5-4193-acd1-da40ef41e3f2" alt="Example of conversion using styled2tailwind" />
+  <br />
+  
+  ![ezgif com-video-to-gif](https://github.com/Blazity/styled2tailwind/assets/28964599/c71c902b-a5d2-4ec4-9e24-b35ec8cef0f4)
+
 </div>
 
 <div align="center">
