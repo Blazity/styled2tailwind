@@ -74,6 +74,12 @@ Contributions are always welcome! To contribute, please follow these steps:
 
 If you're looking for help or simply want to share your thoughts about the project, we encourage you to join our Discord community. Here's the link: [https://blazity.com/discord](https://blazity.com/discord). It's a space where we exchange ideas and help one another. Everyone's input is appreciated, and we look forward to welcoming you.
 
+<br />
+<a href="https://blazity.com/discord" style="width: 100%; display: flex; justify-content: center;">
+  <img src="https://discordapp.com/api/guilds/1111676875782234175/widget.png?style=banner2" alt="Blazity Discord Banner"/>
+</a>
+<br />
+
 ## 📜 License
 
 This project is licensed under the MIT License. For more information, see the [LICENSE](./LICENSE) file.
