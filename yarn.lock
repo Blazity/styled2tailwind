@@ -2061,9 +2061,9 @@ prelude-ls@^1.2.1:
   integrity sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==
 
 prettier-plugin-tailwindcss@^0.6.0:
-  version "0.6.4"
-  resolved "https://registry.yarnpkg.com/prettier-plugin-tailwindcss/-/prettier-plugin-tailwindcss-0.6.4.tgz#84d42fae70ac6f0846ee9045f33fe9ebb86f2b79"
-  integrity sha512-3vhbIvlKyAWPaw9bUr2cw6M1BGx2Oy9CCLJyv+nxEiBGCTcL69WcAz2IFMGqx8IXSzQCInGSo2ujAByg9poHLQ==
+  version "0.6.5"
+  resolved "https://registry.yarnpkg.com/prettier-plugin-tailwindcss/-/prettier-plugin-tailwindcss-0.6.5.tgz#e05202784a3f41889711ae38c75c5b8cad72f368"
+  integrity sha512-axfeOArc/RiGHjOIy9HytehlC0ZLeMaqY09mm8YCkMzznKiDkwFzOpBvtuhuv3xG5qB73+Mj7OCe2j/L1ryfuQ==
 
 prettier@^3.0.0:
   version "3.3.2"
