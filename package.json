@@ -22,7 +22,7 @@
     "@types/babel__core": "^7.20.1",
     "@types/babel__traverse": "^7.20.1",
     "@types/lodash": "^4.14.195",
-    "@types/node": "^20.3.1",
+    "@types/node": "^22.0.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "@vitest/coverage-v8": "^2.0.0",
